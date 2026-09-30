@@ -20,10 +20,17 @@ Everything below was left out. When in doubt, a file was excluded.
 | `src/` with no origin recorded in the registry | 2,732 | House-style address-named files whose headers say they were "cross-checked against vendor/bfm-decomp". Their independence from the upstream code cannot be established from the record, so they are excluded as unclear origin. They are also reimplementations of Square's game code. |
 | `src/` files not in the registry (drafts, shared runtime shims) | 136 | Unregistered, origin unreviewed. |
 
-The 264 owner-authored functions listed in `config/lane_own_code_allow.txt`
-(the only C that a release build compiles natively) also live under `src/`.
-This snapshot leaves out all of `src/`, so their sources are not included
-yet. The allow-list itself holds only addresses and is included.
+**Included from `src/`:** the owner-authored matched C that the release
+compiles natively: 252 of the 264 functions in `config/lane_own_code_allow.txt`
+(`src/main/`, registry origin empty, no upstream marker in the source, and
+text similarity against the upstream decompilation clear), plus the small
+runtime shims in `src/shared/`. Their registry entries are in
+`provenance/matches.json` (addresses, sizes, paths only).
+
+| Path | Files | Reason |
+|---|---:|---|
+| The other 12 allow-listed sources and `include/m2c_macros.h` | 13 | They use a helper header adapted from m2c's `m2c_macros.h` (m2c is GPL-3.0), which is not compatible with this repository's MIT license. The release compiles them; this repository leaves them to the interpreter. |
+| `src/main/80012ab0.c`, `80012e6c.c`, `80013154.c` | 3 | The CMake smoke leaves that correspond to upstream symbols; the build skips the smoke set and `musashi_pc_smoke` when they are absent. |
 | `include/labels.inc` | 1 | A symlink into the upstream tree (`vendor/bfm-decomp/include/labels.inc`). |
 | `include/macro.inc`, `include/gte_macros.inc` | 2 | Byte-identical to the upstream decompilation's `include/` files. |
 | `vendor/bfm-decomp/` | (untracked) | The upstream tree itself; never tracked, never considered. |
@@ -107,7 +114,7 @@ Scrubbed in place (content kept, local specifics replaced):
 
 ## What the snapshot cannot do without these
 
-The port's CMake targets and many tests compile files under `src/` and use
-`include/*.inc`; they are not buildable from this repository alone (see
-README.md, "Building"). Tests that need the decompiled sources, your disc
-files, a BIOS or PsyCross skip or fail when those are absent.
+`musashi_native_boot` builds from this repository with PsyCross and your own
+disc extract (README.md, "Build from source"). Matching tools and many tests
+also need the decompiled sources, the retail disassembly, a BIOS or your disc
+files; they skip or fail when those are absent.

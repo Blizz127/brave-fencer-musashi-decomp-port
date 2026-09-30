@@ -1,6 +1,9 @@
 Scope: this MIT license covers only the owner's original work in this
 repository: the native PC port and its host/platform layer (pc_port/), the
-tools and scripts written for this project (tools/), the tests (tests/), the
+tools and scripts written for this project (tools/), the owner-authored
+matched C under src/ (a reimplementation of the game's code: this license
+grants rights only in the owner's own expression, none in the game), the
+tests (tests/), the
 build and split configuration (CMakeLists.txt, config/: addresses, sizes,
 names and hashes), the provenance template (provenance/) and the
 documentation (docs/, *.md).

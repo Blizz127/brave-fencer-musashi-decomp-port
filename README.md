@@ -126,23 +126,27 @@ to differ from the PlayStation original, and everything not compared yet.
 ## Build from source
 
 This repository holds the port (`pc_port/`), its tools (`tools/`), tests,
-configuration and documentation. They are all the owner's original work. See
-[EXCLUDED.md](EXCLUDED.md) for what is left out and why.
+configuration and documentation, and the owner-authored matched C that the
+port compiles natively (`src/main/`, 252 functions, with their entries in
+`provenance/matches.json`: addresses, sizes and source paths only). All of it
+is the owner's original work. See [EXCLUDED.md](EXCLUDED.md) for what is left
+out and why.
+
+Matched C is a reimplementation of the game's own code, written so that the
+original compiler reproduces the original machine code. It is published for
+study, interoperability and preservation, like other matching
+decompilations; it does not grant any rights in *Brave Fencer Musashi*.
 
 The release binary is built with `-DMUSASHI_NATIVE_LANE=ON
 -DMUSASHI_LANE_OWN_CODE_ONLY=ON`. With these options the native lane compiles
-only the owner-authored matched C functions listed in
+only owner-authored matched C listed in
 [config/lane_own_code_allow.txt](config/lane_own_code_allow.txt) (guest
 addresses only). Everything else runs interpreted from your own disc,
 including every function whose recorded origin names the upstream
-decompilation or Sony/Psy-Q code.
-
-**This repository alone cannot build the port yet.** CMake also compiles
-matched C sources under `src/`, including the owner-authored functions on
-that list, and the native lane generator reads the match registry
-(`provenance/matches.json`). Neither is in this snapshot yet. They are being
-separated from code derived from the upstream decompilation, which cannot be
-redistributed.
+decompilation or Sony/Psy-Q code. This repository builds that binary with the
+steps below (it compiles 210 functions natively; the release also compiles 12
+more whose sources use an m2c-derived helper header that is not published
+here).
 
 A build needs the following:
 
