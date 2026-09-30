@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "title": "Brave Fencer Musashi",
+  "platform": "Sony PlayStation",
+  "region": "USA",
+  "media": {
+    "kind": "chd",
+    "source_path": "<user-supplied CHD; path not recorded in the public snapshot>",
+    "size_bytes": 210618433,
+    "sha256": "511e4bcae71bb09b5b7e4818aa303a6fa06c189a29dfdef55224a68d4e4150cc"
+  },
+  "payload_policy": "retail payload remains outside version control",
+  "extraction": {
+    "status": "extracted",
+    "tool": {
+      "chdman": "chdman (from PATH)",
+      "dumpsxiso": "tools/third_party/mkpsxiso/build/dumpsxiso"
+    },
+    "output_directory": "extracted/disc",
+    "observed_at": null,
+    "layout_xml": "extracted/disc/layout.xml",
+    "file_count": 28
+  },
+  "boot": {
+    "status": "observed",
+    "system_cnf": "extracted/disc/files/SYSTEM.CNF",
+    "psx_exe": "extracted/disc/files/SLUS_007.26"
+  },
+  "notes": [
+    "The expected CHD identity was supplied by the operator and verified locally.",
+    "No executable metadata is fabricated before extraction and direct observation."
+  ]
+}

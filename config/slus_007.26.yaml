@@ -1,0 +1,48 @@
+# Brave Fencer Musashi (USA) — main executable split.
+#
+# Every address here was read from the retail PS-X EXE header recorded in
+# provenance/exe_identity.json, not inferred. The 2048-byte header maps file
+# offset 0x800 to vram 0x80010000, and 0x800 + t_size (0x64800) is exactly the
+# 0x65000 file size, so the executable is one flat text segment with no
+# separate data or bss segment of its own.
+#
+# The compiler is deliberately absent: config/../docs/COMPILER-ID.md forbids
+# naming a toolchain before disassembly evidence supports it.
+name: Brave Fencer Musashi (USA)
+sha1: 143dbb89f34491258bbc27810d0a12ec8b43a8dd
+
+options:
+  platform: psx
+  basename: SLUS_007.26
+  # Paths resolve relative to this file's directory, so base_path escapes config/.
+  base_path: ../
+  target_path: extracted/disc/files/SLUS_007.26
+  asm_path: asm
+  src_path: src
+  build_path: build
+  ld_script_path: config/SLUS_007.26.ld
+  # The .auto file holds hole-evidenced starts (see its header); the plain
+  # file holds hand-curated names. Same layout as overlay_main_0012.yaml.
+  symbol_addrs_path:
+    - config/symbol_addrs.main.auto.txt
+    - config/symbol_addrs.txt
+  undefined_syms_auto_path: config/undefined_syms.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: main
+    type: code
+    start: 0x800
+    vram: 0x80010000
+    subsegments:
+      - [0x800, asm, main]
+
+  # End marker: 0x800 header + 0x64800 text == 0x65000 == observed file size.
+  - [0x65000]

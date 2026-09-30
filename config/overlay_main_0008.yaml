@@ -1,0 +1,44 @@
+# MAIN.CD member 0008 — vendor counterpart vendor/bfm-decomp/src/md_MAIN_008 (Druthulu/BFM-decomp;
+# vendor md_MAIN_ numbering is 0-based, the same as extracted/overlays/main/NNNN.bin).
+#
+# CONTAINER: PAC type-0 header at 0x0; the payload starts at file offset 0x19000 and loads at
+# 0x800CEDF8, so file offset 0 maps to 0x800B5DF8 (the registry base). The payload's
+# first word is data; code is [0x800CEDFC, 0x800CF0FC) (0x300 bytes), taken from the
+# vendor's function starts and the last jr $ra before the first data symbol it references.
+name: MAIN.CD member 0008
+sha1: 207dfeba3176cb006bd1e9a8cd77c1cd6801cd53
+
+options:
+  platform: psx
+  basename: main_0008
+  base_path: ../
+  target_path: extracted/overlays/main/0008.bin
+  asm_path: asm/overlays/main_0008
+  src_path: src/overlays/main_0008
+  build_path: build
+  ld_script_path: config/main_0008.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.main_0008.auto.txt
+    - config/symbol_addrs.main_0008.txt
+  undefined_syms_auto_path: config/undefined_syms.main_0008.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.main_0008.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: main_0008
+    type: code
+    start: 0x0
+    vram: 0x800B5DF8
+    subsegments:
+      - [0x0, data, main_0008_container]
+      - [0x19000, data, main_0008_hdr]
+      - [0x19004, asm, main_0008]
+      - [0x19304, data, main_0008_tail]
+
+  - [0x19800]

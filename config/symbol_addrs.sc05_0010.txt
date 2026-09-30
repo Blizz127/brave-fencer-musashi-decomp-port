@@ -1,0 +1,2 @@
+// Hand-curated names for sc05_0010. Address-named symbols live in
+// symbol_addrs.sc05_0010.auto.txt; add real names here.

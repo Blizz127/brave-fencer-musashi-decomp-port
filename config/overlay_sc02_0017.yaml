@@ -1,0 +1,43 @@
+# sc02_0017 — extracted/overlays/sc02/0017.pac0.bin. Vendor counterpart vendor/bfm-decomp/src/ov_SC02_017 (Druthulu/BFM-decomp).
+# Decoded LZSS code chunk (PAC type 4) of extracted/overlays/sc02/0017.bin, written by tools/decode_sc_overlays.py (gitignored).
+# The code payload loads at 0x80128158, so file offset 0 maps to 0x80128158 (the registry base).
+# Code is 0x80128158..0x8018A488: the vendor's function definitions, ending at the last `jr $ra`
+# before the first data symbol the vendor references past the last function.
+# Function starts: config/symbol_addrs.sc02_0017.auto.txt (see its header).
+name: sc02_0017
+sha1: c0253499eed71309d731862ffc76766d183d031e
+
+options:
+  platform: psx
+  basename: sc02_0017
+  base_path: ../
+  target_path: extracted/overlays/sc02/0017.pac0.bin
+  asm_path: asm/overlays/sc02_0017
+  src_path: src/overlays/sc02_0017
+  build_path: build
+  ld_script_path: config/sc02_0017.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc02_0017.auto.txt
+    - config/symbol_addrs.sc02_0017.txt
+  undefined_syms_auto_path: config/undefined_syms.sc02_0017.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc02_0017.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc02_0017
+    type: code
+    start: 0x0
+    vram: 0x80128158
+    subsegments:
+      # Code: vram 0x80128158..0x8018A488.
+      - [0x0, asm, sc02_0017]
+      # Data after the code, through the end of the member.
+      - [0x62330, data, sc02_0017_tail]
+
+  - [0xC7BDF]

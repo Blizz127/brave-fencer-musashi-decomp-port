@@ -1,0 +1,78 @@
+diff -u -r a/pc_port/native_boot.c b/pc_port/native_boot.c
+--- a/pc_port/native_boot.c	2026-09-28 13:56:49.506449959 +0000
++++ b/pc_port/native_boot.c	2026-09-28 13:56:49.564446791 +0000
+@@ -159,6 +159,15 @@
+ 
+ /* One presented frame: the bfm_plat renderer (via the GPU bridge) or the
+  * PsyCross scanout of the controller's VRAM. */
++/* Display enabled (GP1 03): the bridge tracks it in bridge mode, where the
++ * native backend no longer sees the display commands. */
++static int display_on(const NativeBoot *boot) {
++#ifdef MUSASHI_WITH_BFM_PLAT
++    if (g_gpu_bridge_on) return bfm_gpu_bridge_display_enabled(&g_gpu_bridge);
++#endif
++    return boot->gpu_renderer.display_enabled;
++}
++
+ static int present_frame(NativeBoot *boot) {
+ #ifdef MUSASHI_WITH_BFM_PLAT
+     if (g_gpu_bridge_on) return bfm_gpu_bridge_vblank(&g_gpu_bridge) == 0;
+@@ -1434,7 +1443,7 @@
+         return 0;
+     /* Host scanout only. Failure here must not fault the epoch; present
+      * already refuses when the GPU backend is mid-command. */
+-    if (boot->gpu_renderer.display_enabled) {
++    if (display_on(boot)) {
+         SDL_Event ev;
+         while (SDL_PollEvent(&ev)) {
+             if (ev.type == SDL_QUIT)
+@@ -3539,6 +3548,26 @@
+  * bfm_plat renderer (MUSASHI_RENDERER, default psycross, drawing into the
+  * PsyCross context native_boot created) and tee the controller into the
+  * bridge. Any refusal leaves the cpu path. */
++/* Bridge mode's controller backend. Both paths share one renderer VRAM, and
++ * the bridge applies every fill, upload, copy, env and display change
++ * through bfm_plat, so the controller's VRAM side does nothing but answer
++ * reads from the bridge. The native gpu_psycross backend refuses VRAM
++ * access while the bfm_plat renderer has a PsyCross scene open
++ * (begin_scene_flag / framebuffer_need_update), which is why it is
++ * replaced rather than kept. */
++static int bridge_be_ok(void *u) { (void)u; return 1; }
++static int bridge_be_word(void *u, uint32_t w) { (void)u; (void)w; return 1; }
++static int bridge_be_enable(void *u, int e) { (void)u; (void)e; return 1; }
++static int bridge_be_display(void *u, const MusashiGpuDisplayState *d) { (void)u; (void)d; return 1; }
++static int bridge_be_fill(void *u, const MusashiGpuFill *f) { (void)u; (void)f; return 1; }
++static int bridge_be_store(void *u, uint16_t x, uint16_t y, uint16_t p) {
++    (void)u; (void)x; (void)y; (void)p;
++    return 1;
++}
++static int bridge_be_read(void *u, uint16_t x, uint16_t y, uint16_t *p) {
++    return bfm_gpu_bridge_read_vram((BfmGpuBridge *)u, x, y, p);
++}
++
+ static void gpu_bridge_attach(MusashiGpuController *gpu) {
+     const char *name = getenv("MUSASHI_RENDERER"), *selected = NULL;
+     BfmPlatOutput out;
+@@ -3558,6 +3587,22 @@
+         return;
+     }
+     bfm_gpu_bridge_init(&g_gpu_bridge);
++    {
++        MusashiGpuBackend be;
++        memset(&be, 0, sizeof be);
++        be.userdata = &g_gpu_bridge;
++        be.reset = bridge_be_ok;
++        be.draw_mode = bridge_be_word;
++        be.display_enable = bridge_be_enable;
++        be.clear_fifo = bridge_be_ok;
++        be.ready = bridge_be_ok;
++        be.environment = bridge_be_word;
++        be.display = bridge_be_display;
++        be.fill_vram = bridge_be_fill;
++        be.store_vram = bridge_be_store;
++        be.read_vram = bridge_be_read;
++        gpu->backend = be;
++    }
+     gpu->tap = bfm_gpu_bridge_tap;
+     gpu->tap_userdata = &g_gpu_bridge;
+     gpu->raster_disabled = 1;

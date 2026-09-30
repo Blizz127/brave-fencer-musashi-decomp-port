@@ -1,0 +1,49 @@
+# sc05_0028 — extracted/overlays/sc05/0028.bin. Vendor counterpart vendor/bfm-decomp/src/md_SC05_028 (Druthulu/BFM-decomp).
+# Raw member: PAC chunk payload at file offset 0x19800.
+# The code payload loads at 0x801ED988, so file offset 0 maps to 0x801D4188 (the registry base).
+# Code is 0x801ED99C..0x801EE338: every vendor function start lands on a function start in these
+# bytes, and the end is the last function's final `jr $ra` (no branch reaches past it).
+# Function starts: config/symbol_addrs.sc05_0028.auto.txt (see its header).
+name: sc05_0028
+sha1: 2e7b8f289e67aca74198cb6c2aca05742710c58e
+
+options:
+  platform: psx
+  basename: sc05_0028
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/sc05/0028.bin
+  asm_path: asm/overlays/sc05_0028
+  src_path: src/overlays/sc05_0028
+  build_path: build
+  ld_script_path: config/sc05_0028.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc05_0028.auto.txt
+    - config/symbol_addrs.sc05_0028.txt
+  undefined_syms_auto_path: config/undefined_syms.sc05_0028.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc05_0028.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc05_0028
+    type: code
+    start: 0x0
+    vram: 0x801D4188
+    subsegments:
+      # PAC container header(s) and any data chunk before the payload.
+      - [0x0, data, sc05_0028_container]
+      # Payload header word(s) before the first function.
+      - [0x19800, data, sc05_0028_hdr]
+      # Code: vram 0x801ED99C..0x801EE338.
+      - [0x19814, asm, sc05_0028]
+      # Data after the code, through the end of the member.
+      - [0x1A1B0, data, sc05_0028_tail]
+
+  # End marker: the member is 0x1D800 bytes.
+  - [0x1D800]

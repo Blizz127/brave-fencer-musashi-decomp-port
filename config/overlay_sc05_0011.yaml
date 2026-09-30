@@ -1,0 +1,45 @@
+# sc05_0011 — extracted/overlays/sc05/0011.pac0.bin. Vendor counterpart vendor/bfm-decomp/src/ov_SC05_011 (Druthulu/BFM-decomp).
+# Decoded LZSS code chunk (PAC type 4) of extracted/overlays/sc05/0011.pac0.bin, written by tools/decode_sc_overlays.py (gitignored).
+# The code payload loads at 0x80128158, so file offset 0 maps to 0x80128158 (the registry base).
+# Code is 0x80128158..0x8017DCCC: every vendor function start lands on a function start in these
+# bytes, and the end is the last function's final `jr $ra` (no branch reaches past it).
+# Function starts: config/symbol_addrs.sc05_0011.auto.txt (see its header).
+name: sc05_0011
+sha1: 3b669a4b04ffc7d2510dba2a9185a4af275737d3
+
+options:
+  platform: psx
+  basename: sc05_0011
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/sc05/0011.pac0.bin
+  asm_path: asm/overlays/sc05_0011
+  src_path: src/overlays/sc05_0011
+  build_path: build
+  ld_script_path: config/sc05_0011.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc05_0011.auto.txt
+    - config/symbol_addrs.sc05_0011.txt
+  undefined_syms_auto_path: config/undefined_syms.sc05_0011.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc05_0011.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc05_0011
+    type: code
+    start: 0x0
+    vram: 0x80128158
+    subsegments:
+      # Code: vram 0x80128158..0x8017DCCC.
+      - [0x0, asm, sc05_0011]
+      # Data after the code, through the end of the member.
+      - [0x55B74, data, sc05_0011_tail]
+
+  # End marker: the member is 0x75087 bytes.
+  - [0x75087]

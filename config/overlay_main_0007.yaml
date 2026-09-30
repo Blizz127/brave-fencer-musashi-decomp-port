@@ -1,0 +1,56 @@
+# MAIN.CD member 0007 — first overlay split.
+#
+# LOAD ADDRESS EVIDENCE (see docs/OVERLAYS.md). 0x800CEDF8 was derived from the
+# member's own bytes, not taken from any external memory map:
+#
+#   1. The member contains three `jal` targets above the static executable's
+#      end (0x80074800): 0x800CF3B0, 0x800CF408, 0x800CF6D0. Of every load
+#      address that would place any of them on a function prologue, only
+#      0x800CEDF8 places *all three* there — at offsets 0x5B8, 0x610 and 0x8D8.
+#      Every rival candidate accounts for at most two.
+#
+#   2. Independently, the member's calls *into* the static executable land on
+#      real function starts: 9 of 10 match functions splat detected, and the
+#      tenth (0x8001AA98) is a start splat missed by merging two functions into
+#      func_8001AA88. So all ten are genuine.
+#
+# The member is raw with no header of its own, so file offset 0 maps directly
+# to the load address.
+name: MAIN.CD member 0007
+sha1: 2ff702b605ab5cfc18474c464c4c07e5f8ffd48c
+
+options:
+  platform: psx
+  basename: main_0007
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/main/0007.bin
+  asm_path: asm/overlays/main_0007
+  src_path: src/overlays/main_0007
+  build_path: build
+  ld_script_path: config/main_0007.ld
+  # The .auto file holds the 17 evidenced starts (see its header); the plain
+  # file holds hand-curated names. Same layout as overlay_main_0012.yaml.
+  symbol_addrs_path:
+    - config/symbol_addrs.main_0007.auto.txt
+    - config/symbol_addrs.main_0007.txt
+  undefined_syms_auto_path: config/undefined_syms.main_0007.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.main_0007.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: main_0007
+    type: code
+    start: 0x0
+    vram: 0x800CEDF8
+    subsegments:
+      - [0x0, asm, main_0007]
+
+  # End marker: the member is 0x2580 bytes.
+  - [0x2580]

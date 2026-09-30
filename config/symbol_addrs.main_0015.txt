@@ -1,0 +1,2 @@
+// Hand-curated names for MAIN.CD member 0015. Address-named symbols live in
+// symbol_addrs.main_0015.auto.txt; add real names here.

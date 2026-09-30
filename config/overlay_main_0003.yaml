@@ -1,0 +1,57 @@
+# MAIN.CD member 0003 — vendor counterpart vendor/bfm-decomp/src/md_MAIN_003 (Druthulu/BFM-decomp;
+# vendor FILE_/md_MAIN_ numbering is 0-based, the same as extracted/overlays/main/NNNN.bin).
+#
+# CONTAINER: PAC header at 0x0, second header at 0x51800; the payload starts at file offset 0x52000.
+# The payload loads at 0x800CEDF8, so file offset 0 maps to 0x8007CDF8 (the registry base).
+# C code is 0x800CEED0..0x800D3200, then one data word and two handwritten
+# routines to 0x800D3574. For the C part: every vendor function start lands on a function start in
+# these bytes, and the end is the last function's final `jr $ra` (no branch reaches past it).
+# Function starts: config/symbol_addrs.main_0003.auto.txt (see its header).
+name: MAIN.CD member 0003
+sha1: fe6e14d96ff11cd1babf33476d70f615a99d7bf0
+
+options:
+  platform: psx
+  basename: main_0003
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/main/0003.bin
+  asm_path: asm/overlays/main_0003
+  src_path: src/overlays/main_0003
+  build_path: build
+  ld_script_path: config/main_0003.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.main_0003.auto.txt
+    - config/symbol_addrs.main_0003.txt
+  undefined_syms_auto_path: config/undefined_syms.main_0003.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.main_0003.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: main_0003
+    type: code
+    start: 0x0
+    vram: 0x8007CDF8
+    subsegments:
+      # PAC container header(s) and any data chunk before the payload.
+      - [0x0, data, main_0003_container]
+      # Payload header word(s) before the first function.
+      - [0x52000, data, main_0003_hdr]
+      # Code: vram 0x800CEED0..0x800D3200.
+      - [0x520D8, asm, main_0003]
+      # One data word between the C code and the two handwritten MDEC routines.
+      - [0x56408, data, main_0003_word]
+      # Handwritten asm (vendor verbatim manifest: PERMANENT-VERBATIM):
+      # func_800D3204 (12 ins) and func_800D3234 (208 ins), ending 0x800D3574.
+      - [0x5640C, asm, main_0003_mdec]
+      # Data after the code, through the end of the member.
+      - [0x5677C, data, main_0003_tail]
+
+  # End marker: the member is 0x7D000 bytes.
+  - [0x7D000]

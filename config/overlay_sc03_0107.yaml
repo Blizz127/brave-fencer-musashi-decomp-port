@@ -1,0 +1,44 @@
+# sc03_0107 — extracted/overlays/sc03/0107.bin. Vendor counterpart vendor/bfm-decomp/src/ov_SC03_107 (Druthulu/BFM-decomp).
+# Raw member: its first PAC chunk (type 1) holds uncompressed code at file offset 0x800 (there is no LZSS type-4 chunk).
+# The code payload at file offset 0x800 loads at 0x80128158, so file offset 0 maps to 0x80127958 (the registry base).
+# Code is 0x80128158..0x8018245C: the vendor's function definitions, ending at the last `jr $ra`
+# before the first data symbol the vendor references past the last function.
+# Function starts: config/symbol_addrs.sc03_0107.auto.txt (see its header).
+name: sc03_0107
+sha1: 908e04b3ad8938acebac289ebbc9c207a63cc80e
+
+options:
+  platform: psx
+  basename: sc03_0107
+  base_path: ../
+  target_path: extracted/overlays/sc03/0107.bin
+  asm_path: asm/overlays/sc03_0107
+  src_path: src/overlays/sc03_0107
+  build_path: build
+  ld_script_path: config/sc03_0107.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc03_0107.auto.txt
+    - config/symbol_addrs.sc03_0107.txt
+  undefined_syms_auto_path: config/undefined_syms.sc03_0107.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc03_0107.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc03_0107
+    type: code
+    start: 0x0
+    vram: 0x80127958
+    subsegments:
+      - [0x0, data, sc03_0107_container]
+      # Code: vram 0x80128158..0x8018245C.
+      - [0x800, asm, sc03_0107]
+      # Data after the code, through the end of the member.
+      - [0x5AB04, data, sc03_0107_tail]
+
+  - [0xF6000]

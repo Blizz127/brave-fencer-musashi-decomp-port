@@ -1,0 +1,102 @@
+# Game data: never commit anything from the disc, a BIOS or a memory card.
+/retail/
+/disc/
+/extracted/
+/payload/
+/bios/
+*.chd
+*.cue
+*.bin
+*.img
+*.iso
+*.ecm
+*.pbp
+*.ccd
+*.mds
+*.mdf
+*.CHD
+*.CUE
+*.BIN
+*.IMG
+*.ISO
+*.mcd
+*.mcr
+*.srm
+*.gme
+*.psv
+*.STR
+*.XA
+*.CD
+SYSTEM.CNF
+scph*
+SCUS_*
+SLPS_*
+SLES_*
+SCES_*
+SLUS_*
+
+# Disassembly and decompiled sources generated from, or derived from, retail
+# code and the upstream decompilation. Not part of this repository.
+/asm/
+/vendor/
+/include/*.inc
+/include/m2c_macros.h
+
+# Fetched toolchains and third-party trees (tools/fetch_toolchains.sh,
+# tools/fetch_lua.sh, mkpsxiso). Never redistributed from here.
+/tools/third_party/
+/tools/psyq/
+/tools/maspsx/
+/tools/m2c/
+
+# splat regenerates these from the user's executable on every split.
+config/*.ld
+config/*.auto.txt
+
+# Local match registry and its lock (large; see EXCLUDED.md).
+/provenance/matches.json
+/provenance/matches.json.lock
+/provenance/local/
+/provenance/captures/
+
+# Build output and local state
+/build/
+/out/
+/artifacts/
+/staging/
+/headless-out/
+/Testing/
+/mods/
+captures/
+screenshots/
+*.o
+*.a
+*.so
+*.dll
+*.elf
+*.exe
+*.EXE
+*.map
+*.sym
+*.lst
+*.d
+*.gcda
+*.gcno
+*.ppm
+*.png
+compile_commands.json
+*.log
+/tmp/
+
+# Editor, Python and local-agent files
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env*
+.DS_Store
+.agents/
+.claude/
+CLAUDE.md
+AGENTS.md

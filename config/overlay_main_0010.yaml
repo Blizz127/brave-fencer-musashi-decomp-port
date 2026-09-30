@@ -1,0 +1,62 @@
+# MAIN.CD member 0010 — the resident engine blob.
+#
+# Vendor correspondence: vendor/bfm-decomp config/splat.resident.yaml disassembles
+# MAIN.CD FILE_010 chunk 1 at vram 0x800CEDF8. Vendor FILE_NNN numbering is 0-based,
+# the same as extracted/overlays/main/NNNN.bin.
+#
+# CONTAINER STRUCTURE. Like member 0012 this is a PAC container: `PAC\0` at 0x0
+# (type 0, u32 at +12 = 0x1F800 points at the second header) and again at 0x1F800
+# (type 0x101, payload size 0x59B5C). The payload starts 0x800 bytes later, at file
+# offset 0x20000, and loads at 0x800CEDF8. So file offset 0 maps to 0x800AEDF8, which
+# is the registry's main_0010 blob base.
+#
+# PAYLOAD LAYOUT (vendor splat.resident.yaml, re-checked against our bytes):
+#   0x20000  one data word (0x00000036) at vram 0x800CEDF8
+#   0x20004  code: 145 functions, 0x800CEDFC..0x800D3408 (last jr $ra at 0x800D3400)
+#   0x24610  data tail: pointer tables, the two jump tables (vendor carves them at
+#            payload 0x450E0 / 0x451C0), packed data and a zero run to EOF.
+# Only the code subsegment is disassembled; function starts come from
+# config/symbol_addrs.main_0010.auto.txt (see its header).
+name: MAIN.CD member 0010
+sha1: 41dfc5c02ef7a2f939ad0c5e88d3b5c5a7ae254c
+
+options:
+  platform: psx
+  basename: main_0010
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/main/0010.bin
+  asm_path: asm/overlays/main_0010
+  src_path: src/overlays/main_0010
+  build_path: build
+  ld_script_path: config/main_0010.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.main_0010.auto.txt
+    - config/symbol_addrs.main_0010.txt
+  undefined_syms_auto_path: config/undefined_syms.main_0010.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.main_0010.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: main_0010
+    type: code
+    start: 0x0
+    vram: 0x800AEDF8
+    subsegments:
+      # Both PAC headers and the container's data chunk.
+      - [0x0, data, main_0010_container]
+      # The payload's leading data word (vram 0x800CEDF8).
+      - [0x20000, data, main_0010_hdr]
+      # Resident code; vram 0x800CEDFC..0x800D3408.
+      - [0x20004, asm, main_0010]
+      # Data tail through the end of the member.
+      - [0x24610, data, main_0010_tail]
+
+  # End marker: the member is 0x79800 bytes.
+  - [0x79800]

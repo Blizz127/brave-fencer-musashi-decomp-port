@@ -1,0 +1,78 @@
+# MAIN.CD member 0012 — the executable's main overlay.
+#
+# This member, not SLUS_007.26, holds the bulk of the game's code: 548KB and
+# 2215 discovered function starts, against 1334 in the static executable.
+#
+# LOAD ADDRESS EVIDENCE (see docs/OVERLAYS.md). 0x80100158 was derived from the
+# member's own bytes, not from an external memory map:
+#
+#   1. Of every load address that would place a self-referencing `jal` target on
+#      a stack-frame prologue, 0x80100158 wins decisively on a 150-target
+#      sample: 102 hits against 12 for the runner-up.
+#
+#   2. Full verification puts 903 of 1253 in-span targets (72%) on a prologue.
+#      The shortfall is explained rather than tolerated: the missed targets
+#      begin with lui, a load, or an ALU op — the first instruction of a
+#      frameless leaf function, which never adjusts $sp and so has no prologue.
+#      Prologue count is a floor on the function count, not the count itself.
+#      tools/discover_symbols.py recovers exactly those 350 as call targets.
+#
+#   3. The 60 targets outside the span cluster at 0x800C…/0x800D…, which is
+#      where member 0007 loads. They are calls into that overlay, so this member
+#      is one segment rather than two.
+#
+# CONTAINER STRUCTURE. The member is not raw: it is a PAC container of two
+# chunks, and splat initially disassembled it as data, which is what exposed
+# this. `PAC\0` sits at file offset 0x0 (type 0) and again at 0x27800 (type 1),
+# and the u32 at +12 of the first header is 0x27800 — it points at the second.
+#
+# The first chunk holds data; the bytes at 0x800 do not decode as instructions.
+# Code begins at 0x28000, immediately after the second 0x800-byte header, and
+# opens with a textbook prologue: addiu $sp,$sp,-0x18 / sw $ra,0x10($sp) / jal.
+#
+# So file offset 0 still maps to 0x80100158, but only [0x28000, 0x86000) is
+# code, and it loads at 0x80128158. Symbol discovery is restricted to that
+# region; scanning the data chunk would invent function starts from bytes that
+# merely resemble a prologue. It contributed none in practice, but the
+# restriction is the correct default rather than a lucky outcome.
+name: MAIN.CD member 0012
+sha1: 78ed2e2a265087dce2b0b35334deed9ecf1c728a
+
+options:
+  platform: psx
+  basename: main_0012
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/main/0012.bin
+  asm_path: asm/overlays/main_0012
+  src_path: src/overlays/main_0012
+  build_path: build
+  ld_script_path: config/main_0012.ld
+  # The .auto file is regenerated from retail bytes by tools/discover_symbols.py
+  # and is untracked; the plain file holds hand-curated names and is tracked.
+  symbol_addrs_path:
+    - config/symbol_addrs.main_0012.auto.txt
+    - config/symbol_addrs.main_0012.txt
+  undefined_syms_auto_path: config/undefined_syms.main_0012.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.main_0012.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: main_0012
+    type: code
+    start: 0x0
+    vram: 0x80100158
+    subsegments:
+      # The PAC container header and its data chunk, plus the second header.
+      - [0x0, data, main_0012_container]
+      # Code chunk; vram works out to 0x80128158.
+      - [0x28000, asm, main_0012]
+
+  # End marker: the member is 0x86000 bytes.
+  - [0x86000]

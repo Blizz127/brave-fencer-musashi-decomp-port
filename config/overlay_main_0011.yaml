@@ -1,0 +1,51 @@
+# MAIN.CD member 0011 — vendor counterpart vendor/bfm-decomp/src/md_MAIN_011 (Druthulu/BFM-decomp;
+# vendor FILE_/md_MAIN_ numbering is 0-based, the same as extracted/overlays/main/NNNN.bin).
+#
+# CONTAINER: PAC header at 0x0, second header at 0x1F800; the payload starts at file offset 0x20000.
+# The payload loads at 0x800CEDF8, so file offset 0 maps to 0x800AEDF8 (the registry base).
+# Code is 0x800CEE74..0x800D31F8: every vendor function start lands on a function start in
+# these bytes, and the end is the last function's final `jr $ra` (no branch reaches past it).
+# Function starts: config/symbol_addrs.main_0011.auto.txt (see its header).
+name: MAIN.CD member 0011
+sha1: 25fed5cf1af2ef677ee9479bdb7565d9e375b4d4
+
+options:
+  platform: psx
+  basename: main_0011
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/main/0011.bin
+  asm_path: asm/overlays/main_0011
+  src_path: src/overlays/main_0011
+  build_path: build
+  ld_script_path: config/main_0011.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.main_0011.auto.txt
+    - config/symbol_addrs.main_0011.txt
+  undefined_syms_auto_path: config/undefined_syms.main_0011.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.main_0011.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: main_0011
+    type: code
+    start: 0x0
+    vram: 0x800AEDF8
+    subsegments:
+      # PAC container header(s) and any data chunk before the payload.
+      - [0x0, data, main_0011_container]
+      # Payload header word(s) before the first function.
+      - [0x20000, data, main_0011_hdr]
+      # Code: vram 0x800CEE74..0x800D31F8.
+      - [0x2007C, asm, main_0011]
+      # Data after the code, through the end of the member.
+      - [0x24400, data, main_0011_tail]
+
+  # End marker: the member is 0x26000 bytes.
+  - [0x26000]

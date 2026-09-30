@@ -1,0 +1,2 @@
+// Hand-curated names for SC03 member 0073. Address-named symbols live in
+// symbol_addrs.sc03_0073.auto.txt; add real names here.

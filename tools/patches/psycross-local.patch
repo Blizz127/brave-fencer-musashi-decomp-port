@@ -1,0 +1,39 @@
+diff --git a/src/PsyX_main.cpp b/src/PsyX_main.cpp
+index f558b40..336cd6e 100644
+--- a/src/PsyX_main.cpp
++++ b/src/PsyX_main.cpp
+@@ -656,8 +656,9 @@ void PsyX_Initialise(char* appName, int width, int height, int fullscreen)
+ 	// set shutdown function (PSX apps usualy don't exit)
+ 	atexit(PsyX_Shutdown);
+ 
+-	// disable cursor visibility
+-	SDL_ShowCursor(0);
++	/* Leave the host cursor visible. Hiding it on Xwayland makes the
++	 * scanout window unclickable-away-from on a desktop session. */
++	SDL_ShowCursor(SDL_ENABLE);
+ }
+ 
+ void PsyX_GetScreenSize(int* screenWidth, int* screenHeight)
+@@ -685,6 +686,9 @@ int g_altKeyState = 0;
+ 
+ void PsyX_Sys_DoPollEvent()
+ {
++	/* Spectator scanout: polling X11 events re-asserts WM_TAKE_FOCUS.
++	 * Native boot still drains SDL_QUIT from hold_window. */
++	return;
+ 	SDL_Event event;
+ 	while (SDL_PollEvent(&event))
+ 	{
+diff --git a/src/pad/PsyX_pad.cpp b/src/pad/PsyX_pad.cpp
+index d073549..f51d73f 100644
+--- a/src/pad/PsyX_pad.cpp
++++ b/src/pad/PsyX_pad.cpp
+@@ -369,7 +369,7 @@ u_short PsyX_Pad_UpdateKeyboardInput()
+ 	if (g_sdlKeyboardState == NULL)
+ 		return ret;
+ 
+-	SDL_PumpEvents();
++	/* Do not PumpEvents: on Xwayland that re-takes input focus every poll. */
+ 
+ 	const PsyXKeyboardMapping& mapping = g_cfg_keyboardMapping;
+ 

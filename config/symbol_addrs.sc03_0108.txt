@@ -1,0 +1,2 @@
+// Hand-curated names for sc03_0108. Address-named symbols live in
+// symbol_addrs.sc03_0108.auto.txt; add real names here.

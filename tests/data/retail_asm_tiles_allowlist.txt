@@ -1,0 +1,11 @@
+# src files that may contain '.word 0x' lines: GTE opcode-encoding macros only
+# (generic instruction encodings, not retail code). This list may only shrink.
+src/main/80017930.c
+src/main/80024bc0.c
+src/main/80025818.c
+src/main/80025a30.c
+src/main/800275bc.c
+src/main/800279ac.c
+src/main/80027d20.c
+src/overlays/sc02_0039/8017e024.c
+src/overlays/sc03_0108/8017db0c.c

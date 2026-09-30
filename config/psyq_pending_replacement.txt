@@ -1,0 +1,4 @@
+# Decompiled Sony PsyQ sources still compiled into the port, pending replacement
+# by PsyCross (MIT) or our own HLE (docs/PC-PORT.md, "PsyQ exclusion").
+# tools/psyq_manifest.py check fails on any PsyQ-range source not listed here;
+# entries are only ever removed.

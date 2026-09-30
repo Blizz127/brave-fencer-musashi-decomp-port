@@ -1,0 +1,45 @@
+# sc07_0007 — extracted/overlays/sc07/0007.pac0.bin. Vendor counterpart vendor/bfm-decomp/src/ov_SC07_007 (Druthulu/BFM-decomp).
+# Decoded LZSS code chunk (PAC type 4) of extracted/overlays/sc07/0007.pac0.bin, written by tools/decode_sc_overlays.py (gitignored).
+# The code payload loads at 0x80128158, so file offset 0 maps to 0x80128158 (the registry base).
+# Code is 0x80128158..0x80182EE4: every vendor function start lands on a function start in these
+# bytes, and the end is the last function's final `jr $ra` (no branch reaches past it).
+# Function starts: config/symbol_addrs.sc07_0007.auto.txt (see its header).
+name: sc07_0007
+sha1: b3b95547ed6830302ae27375b463947b4999dc5e
+
+options:
+  platform: psx
+  basename: sc07_0007
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/sc07/0007.pac0.bin
+  asm_path: asm/overlays/sc07_0007
+  src_path: src/overlays/sc07_0007
+  build_path: build
+  ld_script_path: config/sc07_0007.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc07_0007.auto.txt
+    - config/symbol_addrs.sc07_0007.txt
+  undefined_syms_auto_path: config/undefined_syms.sc07_0007.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc07_0007.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc07_0007
+    type: code
+    start: 0x0
+    vram: 0x80128158
+    subsegments:
+      # Code: vram 0x80128158..0x80182EE4.
+      - [0x0, asm, sc07_0007]
+      # Data after the code, through the end of the member.
+      - [0x5AD8C, data, sc07_0007_tail]
+
+  # End marker: the member is 0x9F9DF bytes.
+  - [0x9F9DF]

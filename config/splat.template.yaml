@@ -1,0 +1,17 @@
+# Template only. Fill values from observed retail layout and compiler work.
+name: brave_fencer_musashi
+platform: psx
+base_path: .
+build_dir: build
+asm_dir: asm
+src_dir: src
+compiler:
+  id: unknown
+  version: unknown
+  flags: []
+  confirmed: false
+input:
+  exe: null
+  sha256: null
+sections: []
+symbols: []

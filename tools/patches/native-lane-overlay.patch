@@ -1,0 +1,590 @@
+diff -ru a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2026-09-28 22:15:34.193491211 +0000
++++ b/CMakeLists.txt	2026-09-28 22:15:34.210490282 +0000
+@@ -573,8 +573,17 @@
+         find_program(MUSASHI_CLANG NAMES clang REQUIRED)
+         find_package(Python3 COMPONENTS Interpreter REQUIRED)
+         set(MUSASHI_LANE_DIR ${MUSASHI_GENERATED_DIR}/native_lane)
++        # Overlay members compiled into the lane (digest-verified per call).
++        set(MUSASHI_LANE_OVERLAY_MEMBERS "main_0003" CACHE STRING
++            "comma-separated overlay members for the native lane")
++        string(REPLACE "," ";" MUSASHI_LANE_OVERLAY_LIST "${MUSASHI_LANE_OVERLAY_MEMBERS}")
++        set(MUSASHI_LANE_OVERLAY_GLOBS)
++        foreach(member IN LISTS MUSASHI_LANE_OVERLAY_LIST)
++            list(APPEND MUSASHI_LANE_OVERLAY_GLOBS
++                ${CMAKE_CURRENT_SOURCE_DIR}/src/overlays/${member}/*.c)
++        endforeach()
+         file(GLOB MUSASHI_LANE_SOURCES CONFIGURE_DEPENDS
+-            ${CMAKE_CURRENT_SOURCE_DIR}/src/main/*.c)
++            ${CMAKE_CURRENT_SOURCE_DIR}/src/main/*.c ${MUSASHI_LANE_OVERLAY_GLOBS})
+         # hooked_pcs() reads the port's sources; psyq_hooked() the compat table.
+         file(GLOB MUSASHI_LANE_HOOK_SOURCES CONFIGURE_DEPENDS
+             ${CMAKE_CURRENT_SOURCE_DIR}/pc_port/*.c)
+@@ -583,6 +592,7 @@
+                    ${MUSASHI_LANE_DIR}/libmusashi_native_lane.a
+             COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/tools/native_lane_gen.py
+                     --out ${MUSASHI_LANE_DIR} --clang ${MUSASHI_CLANG} --ar ${CMAKE_AR} --jobs 4
++                    --overlay-members "${MUSASHI_LANE_OVERLAY_MEMBERS}"
+             DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/tools/native_lane_gen.py
+                     ${CMAKE_CURRENT_SOURCE_DIR}/provenance/matches.json
+                     ${MUSASHI_LANE_SOURCES}
+@@ -605,6 +615,9 @@
+         target_include_directories(musashi_native_lane PRIVATE
+             ${CMAKE_CURRENT_SOURCE_DIR}/pc_port/include)
+ 
++        add_executable(musashi_native_lane_overlay_probe tests/native_lane_overlay_probe.c)
++        target_compile_features(musashi_native_lane_overlay_probe PRIVATE c_std_99)
++        target_link_libraries(musashi_native_lane_overlay_probe PRIVATE musashi_native_lane)
+         add_executable(musashi_native_lane_probe tests/native_lane_probe.c)
+         target_compile_features(musashi_native_lane_probe PRIVATE c_std_99)
+         target_link_libraries(musashi_native_lane_probe PRIVATE musashi_native_lane)
+diff -ru a/pc_port/include/musashi_native_lane.h b/pc_port/include/musashi_native_lane.h
+--- a/pc_port/include/musashi_native_lane.h	2026-09-28 22:15:34.254487877 +0000
++++ b/pc_port/include/musashi_native_lane.h	2026-09-28 22:15:34.342295068 +0000
+@@ -44,6 +44,34 @@
+     uint8_t returns; /* 1 when it produces v0, 0 for void */
+ } MusashiNativeLaneEntry;
+ 
++/* Overlay functions (MAIN.CD / scene members) share load addresses, so an
++ * overlay entry runs natively only when the bytes resident in guest RAM at
++ * [guest_pc, guest_pc + size) hash to the member's own digest (FNV-1a 64,
++ * computed at build time from the user's extracted member file). Checked on
++ * every call, never inferred; on a mismatch the interpreter runs the words
++ * that are actually there. Several entries may share a guest_pc (one per
++ * member). */
++typedef struct MusashiNativeLaneOverlayEntry {
++    MusashiNativeLaneEntry entry;
++    uint32_t size;   /* bytes hashed: the function's registry extent */
++    uint64_t digest; /* FNV-1a 64 of the member's bytes over that extent */
++    const char *member; /* e.g. "main_0003" */
++} MusashiNativeLaneOverlayEntry;
++
++/* Install the overlay table (copied and sorted; replaces any previous one).
++ * Returns the number of entries, or -1 on an unaligned PC or a
++ * (guest_pc, digest) duplicate. */
++int musashi_native_lane_install_overlay(const MusashiNativeLaneOverlayEntry *entries,
++                                        size_t count);
++
++/* 1 when guest RAM at [pc, pc + size) hashes to digest (used by generated
++ * stubs before a direct native call to another overlay function). */
++int musashi_native_lane_overlay_resident(uint32_t pc, uint32_t size, uint64_t digest);
++
++/* Overlay entries run natively (digest matched) and refused (a candidate PC
++ * whose resident bytes matched no member), since process start. */
++void musashi_native_lane_overlay_stats(uint64_t *verified, uint64_t *refused);
++
+ /* Argument n (0-based) under the o32 register ABI. */
+ uint32_t musashi_native_lane_arg(const MusashiNativeLaneCall *call, unsigned n);
+ 
+diff -ru a/pc_port/mips_formatter.c b/pc_port/mips_formatter.c
+--- a/pc_port/mips_formatter.c	2026-09-28 22:15:34.508473996 +0000
++++ b/pc_port/mips_formatter.c	2026-09-28 22:15:34.520473340 +0000
+@@ -12351,6 +12351,103 @@
+     return NULL;
+ }
+ 
++/* Overlay entries (MusashiNativeLaneOverlayEntry): sorted by guest_pc, then
++ * digest. An entry runs only when guest RAM over its extent hashes to its
++ * member's digest at the moment of the call. */
++static MusashiNativeLaneOverlayEntry *g_lane_ovl;
++static size_t g_lane_ovl_count;
++static uint32_t g_lane_ovl_min = UINT32_MAX, g_lane_ovl_max;
++static uint64_t g_lane_ovl_verified, g_lane_ovl_refused;
++
++static int lane_ovl_cmp(const void *a, const void *b) {
++    const MusashiNativeLaneOverlayEntry *x = a, *y = b;
++    if (x->entry.guest_pc != y->entry.guest_pc) return x->entry.guest_pc < y->entry.guest_pc ? -1 : 1;
++    return x->digest < y->digest ? -1 : x->digest > y->digest;
++}
++
++int musashi_native_lane_install_overlay(const MusashiNativeLaneOverlayEntry *entries, size_t count) {
++    MusashiNativeLaneOverlayEntry *copy = NULL;
++    size_t i;
++    if (count && !entries) return -1;
++    if (count) {
++        copy = malloc(sizeof(*copy) * count);
++        if (!copy) return -1;
++        memcpy(copy, entries, sizeof(*copy) * count);
++        qsort(copy, count, sizeof(*copy), lane_ovl_cmp);
++        for (i = 0; i < count; ++i)
++            if ((copy[i].entry.guest_pc & 3u) || !copy[i].entry.fn || !copy[i].size ||
++                (i && copy[i].entry.guest_pc == copy[i - 1].entry.guest_pc &&
++                 copy[i].digest == copy[i - 1].digest)) {
++                free(copy);
++                return -1;
++            }
++    }
++    free(g_lane_ovl);
++    g_lane_ovl = copy;
++    g_lane_ovl_count = count;
++    g_lane_ovl_min = count ? copy[0].entry.guest_pc : UINT32_MAX;
++    g_lane_ovl_max = count ? copy[count - 1].entry.guest_pc : 0u;
++    return (int)count;
++}
++
++static int lane_ram_digest(MusashiBootMemory *memory, uint32_t pc, uint32_t size, uint64_t *out) {
++    const uint8_t *bytes = memory ? musashi_boot_ram_span(memory, pc, size) : NULL;
++    uint64_t h = 0xcbf29ce484222325ull;
++    uint32_t i;
++    if (!bytes) return 0;
++    for (i = 0; i < size; ++i) {
++        h ^= bytes[i];
++        h *= 0x100000001b3ull;
++    }
++    *out = h;
++    return 1;
++}
++
++static size_t lane_ovl_first(uint32_t pc) {
++    size_t lo = 0, hi = g_lane_ovl_count;
++    if (pc < g_lane_ovl_min || pc > g_lane_ovl_max) return g_lane_ovl_count;
++    while (lo < hi) {
++        size_t mid = lo + (hi - lo) / 2u;
++        if (g_lane_ovl[mid].entry.guest_pc < pc) lo = mid + 1u; else hi = mid;
++    }
++    return lo < g_lane_ovl_count && g_lane_ovl[lo].entry.guest_pc == pc ? lo : g_lane_ovl_count;
++}
++
++/* The candidate whose member's bytes are resident right now, or NULL. */
++static const MusashiNativeLaneEntry *lane_find_overlay(MusashiBootMemory *memory, uint32_t pc) {
++    size_t i = lane_ovl_first(pc);
++    uint32_t hashed_size = 0;
++    uint64_t digest = 0;
++    if (i == g_lane_ovl_count) return NULL;
++    for (; i < g_lane_ovl_count && g_lane_ovl[i].entry.guest_pc == pc; ++i) {
++        const MusashiNativeLaneOverlayEntry *e = &g_lane_ovl[i];
++        if (e->size != hashed_size) {
++            if (!lane_ram_digest(memory, pc, e->size, &digest)) continue;
++            hashed_size = e->size;
++        }
++        if (digest == e->digest) {
++            ++g_lane_ovl_verified;
++            return &e->entry;
++        }
++    }
++    ++g_lane_ovl_refused;
++    return NULL;
++}
++
++int musashi_native_lane_overlay_resident(uint32_t pc, uint32_t size, uint64_t digest) {
++    uint64_t h;
++    MusashiBootMemory *memory = g_lane_active ? g_lane_active->memory : NULL;
++    if (!lane_ram_digest(memory, pc, size, &h)) return 0;
++    if (h == digest) { ++g_lane_ovl_verified; return 1; }
++    ++g_lane_ovl_refused;
++    return 0;
++}
++
++void musashi_native_lane_overlay_stats(uint64_t *verified, uint64_t *refused) {
++    if (verified) *verified = g_lane_ovl_verified;
++    if (refused) *refused = g_lane_ovl_refused;
++}
++
+ static int g_lane_suspended;
+ 
+ void musashi_native_lane_suspend(int suspend) {
+@@ -12440,10 +12537,13 @@
+     MusashiNativeLaneCall call;
+     uint32_t ra, sp;
+     volatile int outcome;
+-    if (!g_lane_count || !(entry = lane_find(cpu->pc))) return 0;
++    entry = g_lane_count ? lane_find(cpu->pc) : NULL;
++    if (!entry && lane_ovl_first(cpu->pc) == g_lane_ovl_count) return 0;
+     if (cpu->merge_pending || cpu->gte_load_pending || cpu->delay_slot ||
+         cpu->npc != cpu->pc + 4u || !musashi_native_lane_usable(memory))
+         return 0;
++    /* Overlay PCs: only the member whose bytes are resident, checked now. */
++    if (!entry && !(entry = lane_find_overlay(memory, cpu->pc))) return 0;
+     ra = cpu->r[31];
+     sp = cpu->r[29];
+     active.prev = g_lane_active;
+@@ -12494,7 +12594,7 @@
+         g_entry_pending = 1u;
+         g_entry_hook(g_entry_hook_user, cpu->pc, cpu->r);
+     }
+-    if (g_lane_count) {
++    if (g_lane_count || g_lane_ovl_count) {
+         int lane = lane_try(memory, cpu);
+         if (lane > 0) return 1;
+         if (lane < 0) return formatter_refuse0(__LINE__, cpu->pc);
+diff -ru a/pc_port/native_boot.c b/pc_port/native_boot.c
+--- a/pc_port/native_boot.c	2026-09-28 22:15:34.602468859 +0000
++++ b/pc_port/native_boot.c	2026-09-28 22:15:34.753460606 +0000
+@@ -3505,6 +3505,15 @@
+ #endif
+ extern const MusashiNativeLaneEntry musashi_native_lane_generated[];
+ extern const size_t musashi_native_lane_generated_count;
++extern const MusashiNativeLaneOverlayEntry musashi_native_lane_overlay[];
++extern const size_t musashi_native_lane_overlay_count;
++
++static void lane_overlay_report(void) {
++    uint64_t verified = 0, refused = 0;
++    musashi_native_lane_overlay_stats(&verified, &refused);
++    fprintf(stderr, "native_boot: NATIVE_LANE overlay verified=%llu refused=%llu\n",
++            (unsigned long long)verified, (unsigned long long)refused);
++}
+ _Static_assert(offsetof(NativeBoot, memory) == 0, "guest RAM leads the boot owner");
+ 
+ /* Natively compiled decomp C dereferences 32-bit guest addresses directly,
+@@ -3546,6 +3555,13 @@
+             fprintf(stderr, "native_boot: NATIVE_LANE table rejected; interpreter only\n");
+             return window;
+         }
++        {
++            int ovl = musashi_native_lane_install_overlay(musashi_native_lane_overlay,
++                                                          musashi_native_lane_overlay_count);
++            fprintf(stderr, "native_boot: NATIVE_LANE overlay entries=%d (resident bytes digest-checked per call)\n",
++                    ovl);
++            if (ovl > 0) atexit(lane_overlay_report);
++        }
+         musashi_native_lane_psyq_bind(&((NativeBoot *)window)->memory, &((NativeBoot *)window)->gte);
+         fprintf(stderr, "native_boot: NATIVE_LANE entries=%u psyq=%u classes=%s\n",
+                 (unsigned)count, (unsigned)(count - musashi_native_lane_generated_count),
+@@ -4200,6 +4216,9 @@
+         if (!cpu_valid || !gte_valid) cleanup_ok=0;
+     }
+     stop = entry_stop.boundary;
++#ifdef MUSASHI_NATIVE_LANE_TABLE
++    lane_overlay_report();
++#endif
+     fprintf(stderr,"native_boot: EXECUTION_BOUNDARY reason=%s\n",
+             host_stop_signal ? "HOST_STOP" :
+             status==MUSASHI_RESETGRAPH_PREFIX_STEP_LIMIT ? "STEP_LIMIT" :
+diff -ru a/tools/native_lane_gen.py b/tools/native_lane_gen.py
+--- a/tools/native_lane_gen.py	2026-09-28 22:15:34.946125152 +0000
++++ b/tools/native_lane_gen.py	2026-09-28 22:15:34.994447436 +0000
+@@ -139,14 +139,66 @@
+         self.rule, self.detail = rule, detail
+ 
+ 
++# Overlay members (MAIN.CD main_NNNN, scene scNN_NNNN) share load addresses,
++# so their lane symbols carry the member: lane_main_0003__func_800D27A0.
++QFUNC = r"(?:[a-z]+\d*_\d{4}__)?func_[0-9A-Fa-f]{8}"
++
++
++def qualify(member, name):
++    return f"{member}__{name}" if member else name
++
++
++def fnv1a64(data):
++    h = 0xCBF29CE484222325
++    for b in data:
++        h = ((h ^ b) * 0x100000001B3) & 0xFFFFFFFFFFFFFFFF
++    return h
++
++
++def member_info(member):
++    """From config/overlay_<member>.yaml: the member file (the user's local
++    extract), its vram/start mapping, and code ranges (asm/c subsegments).
++    None when the config or the file is missing."""
++    cfg = ROOT / "config" / f"overlay_{member}.yaml"
++    if not cfg.exists():
++        return None
++    text = cfg.read_text(errors="replace")
++    seg = re.search(r"-\s*name:\s*(\w+)\s*\n\s*type:\s*code\s*\n\s*start:\s*(0x[0-9A-Fa-f]+)"
++                    r"\s*\n\s*vram:\s*(0x[0-9A-Fa-f]+)", text)
++    tp = re.search(r"target_path:\s*(\S+)", text)
++    if not seg or not tp:
++        return None
++    start, vram = int(seg.group(2), 16), int(seg.group(3), 16)
++    subs = [(int(m.group(1), 16), m.group(2)) for m in
++            re.finditer(r"^\s*-\s*\[\s*(0x[0-9A-Fa-f]+)\s*(?:,\s*(\w+))?", text, flags=re.M)]
++    code = [(vram + o - start, vram + n[0] - start) for (o, k), n in zip(subs, subs[1:])
++            if k in ("asm", "c", "hasm")]
++    path = ROOT / tp.group(1)
++    if not path.exists() or not code:
++        return None
++    return dict(member=member, path=path, vram=vram, start=start, code=code, data=path.read_bytes())
++
++
++def member_digest(info, pc, size):
++    off = pc - info["vram"] + info["start"]
++    if off < 0 or off + size > len(info["data"]):
++        return None
++    return fnv1a64(info["data"][off:off + size])
++
++
+ def run(cmd, **kw):
+     return subprocess.run(cmd, capture_output=True, text=True, **kw)
+ 
+ 
+-def load_symbol_addrs():
+-    """name -> address from tracked config/*syms*.txt / symbol_addrs*.txt."""
++def load_symbol_addrs(member=None):
++    """name -> address from tracked config/*syms*.txt / symbol_addrs*.txt.
++    With a member, that member's own symbol files come first."""
+     table = {}
+-    for path in sorted((ROOT / "config").glob("*.txt")):
++    paths = sorted((ROOT / "config").glob("*.txt"))
++    if member:
++        own = [p for p in paths if f".{member}." in p.name]
++        paths = own + [p for p in paths if p not in own]
++    for path in paths:
+         if "sym" not in path.name:
+             continue
+         for line in path.read_text(errors="replace").splitlines():
+@@ -314,7 +366,7 @@
+ MEMORY_FNS = ("memset", "memcpy", "memmove")
+ 
+ 
+-def rewrite_symbols(ir, symbols):
++def rewrite_symbols(ir, symbols, member=None, member_code=()):
+     """Replace guest data symbols with absolute guest addresses. Functions
+     this TU defines become lane_func_*; calls to guest functions it only
+     declares become lane_call_func_* (resolved per signature later); any
+@@ -361,7 +413,10 @@
+                 is_def_or_decl = line.startswith(("define ", "declare "))
+                 is_call_target = after == "(" and re.search(r"\bcall\b", line[:mm.start()]) is not None
+                 if is_def_or_decl or is_call_target:
+-                    return ("@lane_" if name in defined else "@lane_call_") + name
++                    addr = guest_address(name, symbols)
++                    local = member and any(lo <= addr < hi for lo, hi in member_code)
++                    q = qualify(member, name) if (name in defined or local) else name
++                    return ("@lane_" if name in defined else "@lane_call_") + q
+                 # Address taken: the guest sees its guest code address.
+                 return f"inttoptr (i64 {guest_address(name, symbols)} to ptr)"
+             return mm.group(0)
+@@ -560,7 +615,7 @@
+                     continue
+                 if name in module_internal:
+                     continue
+-                if not name.startswith(("lane_func_", "lane_call_func_")):
++                if not re.fullmatch(r"lane_(?:call_)?" + QFUNC + r"(?:__\w+)?", name):
+                     raise Reject("calls", f"call to {name}")
+                 if refs_host(args):
+                     raise Reject("escape", f"host address passed to {name}")
+@@ -621,7 +676,7 @@
+ 
+ 
+ def lane_names(ir):
+-    return set(re.findall(r"^define [^@]*@(lane_func_[0-9A-Fa-f]{8})\(", ir, flags=re.M))
++    return set(re.findall(r"^define [^@]*@(lane_" + QFUNC + r")\(", ir, flags=re.M))
+ 
+ 
+ def sig_code(sig):
+@@ -637,7 +692,7 @@
+     called with at most argc register-width arguments."""
+     stubs, renames = {}, {}
+     for decl in [l for l in optir.splitlines() if l.startswith("declare ")]:
+-        m = re.search(r"@(lane_call_(func_[0-9A-Fa-f]{8}))\(", decl)
++        m = re.search(r"@(lane_call_(" + QFUNC + r"))\(", decl)
+         if not m:
+             continue
+         sym, callee = m.group(1), m.group(2)
+@@ -683,10 +738,11 @@
+     return ret, ("signext" in pre, "zeroext" in pre)
+ 
+ 
+-def build_one(entry, out, symbols, hooks, clang):
++def build_one(entry, out, symbols, hooks, clang, info=None):
+     vram, size, src = entry["vram"], entry["size"], ROOT / entry["source"]
+     name = entry["name"]
+-    tag = f"{vram:08x}"
++    member = info["member"] if info else None
++    tag = f"{member}_{vram:08x}" if member else f"{vram:08x}"
+     work = out / "ir"
+     try:
+         for pc in hooks:
+@@ -719,7 +775,8 @@
+             raise Reject("compile", (r.stderr.strip().splitlines() or ["?"])[0][:160])
+         ir = o0.read_text()
+         check_layout(ir)
+-        rewritten = narrow_pointer_cells(rewrite_symbols(ir, symbols))
++        rewritten = narrow_pointer_cells(rewrite_symbols(ir, symbols, member,
++                                                         info["code"] if info else ()))
+         sub = work / f"{tag}.sub.ll"
+         sub.write_text(rewritten)
+         opt = work / f"{tag}.opt.ll"
+@@ -735,7 +792,7 @@
+         check_optimized(optir, internal)
+         check_polling_loops(optir)
+         defs = lane_names(optir)
+-        own = f"lane_{name}"
++        own = f"lane_{qualify(member, name)}"
+         if own not in defs:
+             raise Reject("symbols", f"{name} not defined by {entry['source']}")
+         sigs = {}
+@@ -751,13 +808,18 @@
+             raise Reject("compile", "object: " + (r.stderr.strip().splitlines() or ["?"])[0][:160])
+         undefined = run(["nm", "-u", str(obj)]).stdout.split()
+         for u in undefined:
+-            if u != "U" and not u.startswith(("lane_call_func_", "lane_func_")) and u not in MEMORY_FNS:
++            if u != "U" and not re.fullmatch(r"lane_(?:call_)?" + QFUNC + r"(?:__\w+)?", u) \
++                    and u not in MEMORY_FNS:
+                 raise Reject("symbols", f"object still references {u}")
+-        return dict(name=name, vram=vram, size=size, source=entry["source"], admitted=True,
+-                    obj=str(obj), defs=sigs, stubs=stubs)
++        digest = member_digest(info, vram, size) if info else None
++        if info and digest is None:
++            raise Reject("overlay", "extent outside the member file")
++        return dict(name=name, qname=qualify(member, name), member=member, vram=vram, size=size,
++                    source=entry["source"], admitted=True, obj=str(obj), defs=sigs, stubs=stubs,
++                    digest=digest)
+     except Reject as e:
+-        return dict(name=name, vram=vram, size=size, source=entry["source"], admitted=False,
+-                    rule=e.rule, detail=e.detail)
++        return dict(name=name, qname=qualify(member, name), member=member, vram=vram, size=size,
++                    source=entry["source"], admitted=False, rule=e.rule, detail=e.detail)
+ 
+ 
+ def psyq_hooked(hooks):
+@@ -833,8 +895,9 @@
+               " * disagree exactly as they can on the PS1. An admitted callee is called",
+               " * directly; any other runs on the interpreter (same CPU, same loop). */"]
+     direct = thunk = 0
++    ovl = {"lane_" + a["qname"]: a for a in admitted if a.get("member")}
+     for sym, (callee, sig, argc, va_ret) in sorted(stubs.items()):
+-        addr = callee[len("func_"):]
++        addr = callee.split("func_")[-1]
+         if sig is None:
+             ret, rext = va_ret
+             params = [("i32", (False, False))] * argc
+@@ -845,6 +908,24 @@
+         regs = [to_guest(f"a{i}", t, e) for i, (t, e) in enumerate(params)]
+         lines.append(f"{rtype} {sym}({plist}) {{")
+         target = "lane_" + callee
++        guard = None
++        if target in ovl:
++            # Another function of the same member: native only while its own
++            # bytes are resident too (checked per call), else the interpreter.
++            o = ovl[target]
++            guard = (f"musashi_native_lane_overlay_resident(0x{o['vram']:08x}u, {o['size']}u, "
++                     f"0x{o['digest']:016x}ull)")
++        if target in defs and guard:
++            lines.append(f"    if (!{guard}) {{")
++            if params:
++                lines.append(f"        const uint32_t args[{len(params)}] = {{{', '.join(regs)}}};")
++                tcall = f"musashi_native_guest_call(0x{addr}u, {len(params)}u, args, NULL)"
++            else:
++                tcall = f"musashi_native_guest_call(0x{addr}u, 0u, NULL, NULL)"
++            lines.append(f"        {'(void)' + tcall if ret == 'void' else 'return ' + from_guest(tcall, ret, rext)};")
++            if ret == "void":
++                lines.append("        return;")
++            lines.append("    }")
+         if target in defs:
+             direct += 1
+             cret, crext, cparams = defs[target]
+@@ -873,13 +954,14 @@
+                 lines.append(f"    return {from_guest(call, ret, rext)};")
+         lines.append("}")
+     lines.append("")
+-    entries = []
+-    for a in sorted(admitted, key=lambda a: a["vram"]):
+-        d = "lane_" + a["name"]
++    entries, ovl_entries = [], []
++    for a in sorted(admitted, key=lambda a: (a["vram"], a.get("member") or "")):
++        d = "lane_" + a["qname"]
++        wrap = f"wrap_{a['member']}_{a['vram']:08x}" if a.get("member") else f"wrap_{a['vram']:08x}"
+         ret, rext, params = a["defs"][d]
+         args = ", ".join(from_guest(f"musashi_native_lane_arg(call, {i}u)", t, e)
+                          for i, (t, e) in enumerate(params))
+-        lines.append(f"static int wrap_{a['vram']:08x}(MusashiNativeLaneCall *call) {{")
++        lines.append(f"static int {wrap}(MusashiNativeLaneCall *call) {{")
+         if not params and ret == "void":
+             lines.append("    (void)call;")
+         if ret == "void":
+@@ -889,13 +971,24 @@
+         lines.append("    return 1;")
+         lines.append("}")
+         cost = 2 * (a["size"] // 4)
+-        entries.append(f"    {{0x{a['vram']:08x}u, {cost}u, wrap_{a['vram']:08x}, \"{a['name']}\", "
+-                       f"{len(params)}u, {0 if ret == 'void' else 1}u}},")
++        row = (f"{{0x{a['vram']:08x}u, {cost}u, {wrap}, \"{a['qname']}\", "
++               f"{len(params)}u, {0 if ret == 'void' else 1}u}}")
++        if a.get("member"):
++            ovl_entries.append(f"    {{{row}, {a['size']}u, 0x{a['digest']:016x}ull, \"{a['member']}\"}},")
++        else:
++            entries.append(f"    {row},")
+     lines.append("")
+     lines.append("const MusashiNativeLaneEntry musashi_native_lane_generated[] = {")
+     lines.extend(entries or ["    {0u, 0u, NULL, NULL, 0u, 0u},"])
+     lines.append("};")
+     lines.append(f"const size_t musashi_native_lane_generated_count = {len(entries)}u;")
++    lines.append("")
++    lines.append("/* Overlay members: run only while guest RAM over the extent hashes to the")
++    lines.append(" * member's digest (FNV-1a 64 of the user's own extracted member file). */")
++    lines.append("const MusashiNativeLaneOverlayEntry musashi_native_lane_overlay[] = {")
++    lines.extend(ovl_entries or ["    {{0u, 0u, NULL, NULL, 0u, 0u}, 0u, 0u, NULL},"])
++    lines.append("};")
++    lines.append(f"const size_t musashi_native_lane_overlay_count = {len(ovl_entries)}u;")
+     (out / "native_lane_table.c").write_text("\n".join(lines) + "\n")
+     return direct, thunk
+ 
+@@ -929,6 +1022,12 @@
+     return picked
+ 
+ 
++def overlay_candidates(members, only=None):
++    registry = json.loads((ROOT / "provenance/matches.json").read_text())["matches"]
++    return [m for m in registry if m["region"] in members and m.get("recovery") == "c"
++            and (ROOT / m["source"]).exists() and (not only or m["vram"] in only)]
++
++
+ def main():
+     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+     ap.add_argument("--out", required=True, type=Path)
+@@ -937,6 +1036,9 @@
+     ap.add_argument("--jobs", type=int, default=4)
+     ap.add_argument("--only", help="file of guest PCs (hex, one per line) to consider, e.g. a trace")
+     ap.add_argument("--exclude", help="file of guest PCs (hex) never to admit")
++    ap.add_argument("--overlay-members", default="",
++                    help="comma-separated overlay members to compile (e.g. main_0003); each needs "
++                         "config/overlay_<m>.yaml and its extracted member file for the digests")
+     args = ap.parse_args()
+     out = args.out
+     (out / "ir").mkdir(parents=True, exist_ok=True)
+@@ -949,25 +1051,36 @@
+     hooks = hooked_pcs()
+     psyq_excluded = []
+     todo = [m for m in candidates(only, psyq_excluded) if m["vram"] not in exclude]
++    infos, missing = {}, []
++    for mem in [m for m in args.overlay_members.split(",") if m]:
++        info = member_info(mem)
++        if info is None:
++            missing.append(mem)  # no config or no local member file: stays interpreted
++        else:
++            infos[mem] = info
++    ovl_todo = [m for m in overlay_candidates(set(infos), only) if m["vram"] not in exclude]
++    msyms = {mem: load_symbol_addrs(mem) for mem in infos}
+     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, args.jobs)) as pool:
+         results = list(pool.map(lambda m: build_one(m, out, symbols, hooks, args.clang), todo))
++        results += list(pool.map(lambda m: build_one(m, out, msyms[m["region"]], hooks, args.clang,
++                                                     infos[m["region"]]), ovl_todo))
+     admitted = [r for r in results if r["admitted"]]
+     # A direct native call cannot reproduce a MIPS caller that passes fewer
+     # arguments than the callee reads: the callee sees whatever the caller
+     # left in a1-a3. Refuse such callers (to a fixpoint, since a refused
+     # caller becomes an interpreted callee for others).
+     while True:
+-        arity = {"lane_" + a["name"]: len(a["defs"]["lane_" + a["name"]][2]) for a in admitted}
++        arity = {"lane_" + a["qname"]: len(a["defs"]["lane_" + a["qname"]][2]) for a in admitted}
+         drop = set()
+         for a in admitted:
+             for sym, (callee, sig, argc, _) in a["stubs"].items():
+                 if "lane_" + callee in arity and argc < arity["lane_" + callee]:
+-                    drop.add(a["name"])
++                    drop.add(a["qname"])
+                     a.update(admitted=False, rule="abi",
+                              detail=f"passes {argc} of {arity['lane_' + callee]} arguments to {callee}")
+         if not drop:
+             break
+-        admitted = [a for a in admitted if a["name"] not in drop]
++        admitted = [a for a in admitted if a["qname"] not in drop]
+     # A native caller of an admitted callee links to it directly; otherwise
+     # the thunk runs the guest words. Duplicate definitions cannot occur:
+     # each TU defines only its own registry function under lane_func_*.
+@@ -1001,8 +1114,12 @@
+                   psyq_excluded=len(psyq_excluded),
+                   psyq_hooked=[f"{pc:08x}" for pc in blocked],
+                   call_stubs=dict(direct=direct, interpreter_thunk=thunk),
+-                  functions=[{k: v for k, v in r.items() if k not in ("obj", "defs", "stubs")}
+-                             for r in sorted(results, key=lambda r: r["vram"])])
++                  overlay=dict(members=sorted(infos), missing=missing,
++                               candidates=len(ovl_todo),
++                               admitted=sum(1 for a in admitted if a.get("member"))),
++                  functions=[{k: (f"{v:016x}" if k == "digest" and v is not None else v)
++                              for k, v in r.items() if k not in ("obj", "defs", "stubs")}
++                             for r in sorted(results, key=lambda r: (r["vram"], r.get("member") or ""))])
+     (out / "report.json").write_text(json.dumps(report, indent=1) + "\n")
+     print(f"native lane: {len(admitted)}/{len(results)} game functions admitted "
+           f"({len(psyq_excluded)} PsyQ-range candidates excluded); rejected {rules}; "

@@ -1,0 +1,49 @@
+# sc04_0030 — extracted/overlays/sc04/0030.bin. Vendor counterpart vendor/bfm-decomp/src/md_SC04_030 (Druthulu/BFM-decomp).
+# Raw member: PAC chunk payload at file offset 0x19800.
+# The code payload loads at 0x801E7B28, so file offset 0 maps to 0x801CE328 (the registry base).
+# Code is 0x801E7B3C..0x801E85D4: every vendor function start lands on a function start in these
+# bytes, and the end is the last function's final `jr $ra` (no branch reaches past it).
+# Function starts: config/symbol_addrs.sc04_0030.auto.txt (see its header).
+name: sc04_0030
+sha1: 93f49c4a7ec817a20a027550e9f4963c70c5f1d6
+
+options:
+  platform: psx
+  basename: sc04_0030
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/sc04/0030.bin
+  asm_path: asm/overlays/sc04_0030
+  src_path: src/overlays/sc04_0030
+  build_path: build
+  ld_script_path: config/sc04_0030.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc04_0030.auto.txt
+    - config/symbol_addrs.sc04_0030.txt
+  undefined_syms_auto_path: config/undefined_syms.sc04_0030.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc04_0030.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc04_0030
+    type: code
+    start: 0x0
+    vram: 0x801CE328
+    subsegments:
+      # PAC container header(s) and any data chunk before the payload.
+      - [0x0, data, sc04_0030_container]
+      # Payload header word(s) before the first function.
+      - [0x19800, data, sc04_0030_hdr]
+      # Code: vram 0x801E7B3C..0x801E85D4.
+      - [0x19814, asm, sc04_0030]
+      # Data after the code, through the end of the member.
+      - [0x1A2AC, data, sc04_0030_tail]
+
+  # End marker: the member is 0x23800 bytes.
+  - [0x23800]

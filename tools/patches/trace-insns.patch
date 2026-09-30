@@ -1,0 +1,49 @@
+--- a/pc_port/mips_formatter.c	2026-09-28 17:37:05.084352401 +0000
++++ b/pc_port/mips_formatter.c	2026-09-28 17:37:05.102110424 +0000
+@@ -12081,6 +12081,7 @@
+ static uint32_t *g_trace_counts;
+ static uint32_t *g_trace_caller;
+ static char *g_trace_kind;
++static uint32_t *g_trace_insns; /* MUSASHI_TRACE_INSNS: interpreted steps per PC */
+ static unsigned long g_trace_seq;
+ static TraceOther g_trace_other[TRACE_OTHER_MAX];
+ static unsigned g_trace_other_n;
+@@ -12126,6 +12127,17 @@
+         fclose(out);
+     }
+     free(rows);
++    if (g_trace_insns) {
++        const char *ipath = getenv("MUSASHI_TRACE_INSNS");
++        out = ipath && ipath[0] ? fopen(ipath, "w") : NULL;
++        if (out) {
++            fprintf(out, "# pc interpreted_steps\n");
++            for (i = 0; i < TRACE_RAM_WORDS; ++i)
++                if (g_trace_insns[i])
++                    fprintf(out, "%08x %u\n", 0x80000000u + (uint32_t)i * 4u, g_trace_insns[i]);
++            fclose(out);
++        }
++    }
+     if (g_trace_file) fflush(g_trace_file);
+ }
+ 
+@@ -12151,6 +12163,8 @@
+                 fprintf(g_trace_file, "# seq target kind caller (j=jal r=jalr d=entry)\n");
+                 atexit(trace_dump);
+                 g_trace_state = 1;
++                if (getenv("MUSASHI_TRACE_INSNS") && getenv("MUSASHI_TRACE_INSNS")[0])
++                    g_trace_insns = calloc(TRACE_RAM_WORDS, sizeof(*g_trace_insns));
+             } else {
+                 fprintf(stderr, "native_boot: MUSASHI_TRACE_FUNCS unavailable (%s)\n", path);
+             }
+@@ -12488,6 +12502,11 @@
+         if (lane > 0) return 1;
+         if (lane < 0) return formatter_refuse0(__LINE__, cpu->pc);
+     }
++    if (g_trace_insns && (cpu->pc >> 29 == 4u || cpu->pc >> 29 == 0u) &&
++        (cpu->pc & 0x1fffffffu) < MUSASHI_RAM_SIZE) {
++        uint32_t *slot = &g_trace_insns[(cpu->pc & 0x1fffffffu) / 4u];
++        if (*slot != UINT32_MAX) ++*slot;
++    }
+     /* 8005F704 words still return 80088A48+(a0&0xF0). After 8005F0C8,
+      * D_80072990 is the InitPAD PadInfo (80078A48); PadGetState jalrs
+      * this getter. Use the live record (identity when 72990==80088A48). */

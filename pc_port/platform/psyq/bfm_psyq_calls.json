@@ -1,0 +1,2132 @@
+{
+ "meta": {
+  "asm_files": 157,
+  "callsites": 37884,
+  "psyq_range": [
+   "0x8003A444",
+   "0x80062998"
+  ]
+ },
+ "entries": [
+  {
+   "addr": "0x8003A444",
+   "name": "_SpuInit",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003B170",
+   "name": "SpuQuit",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003B1EC",
+   "name": "func_8003B1EC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd1",
+   "object": "S_SE.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003B250",
+   "name": "func_8003B250",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd1",
+   "object": "S_SR.o",
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003B280",
+   "name": "func_8003B280",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd1",
+   "object": "S_SR.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003B45C",
+   "name": "func_8003B45C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd1",
+   "object": "S_SRMP.o",
+   "callsites": 4,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003BE24",
+   "name": "func_8003BE24",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd1",
+   "object": "S_RRWA.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003BE74",
+   "name": "func_8003BE74",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd1",
+   "object": "S_SAV.o",
+   "callsites": 5,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003C23C",
+   "name": "func_8003C23C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd1",
+   "object": "S_SK.o",
+   "callsites": 5,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003C498",
+   "name": "func_8003C498",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd2",
+   "object": "S_STSA.o",
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003C4F0",
+   "name": "func_8003C4F0",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd2",
+   "object": "S_ITC.o",
+   "callsites": 8,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003C598",
+   "name": "func_8003C598",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd2",
+   "object": "S_SCA.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003D25C",
+   "name": "func_8003D25C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd2",
+   "object": "SR_GAKS.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003D3B4",
+   "name": "func_8003D3B4",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd2",
+   "object": null,
+   "callsites": 5,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003D3F8",
+   "name": "SpuSetReverbModeDepth",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003D434",
+   "name": "func_8003D434",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd3",
+   "object": "SSEND.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003D454",
+   "name": "SsEnd",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd3",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003D518",
+   "name": "func_8003D518",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd3",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003D650",
+   "name": "func_8003D650",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd4",
+   "object": "SSSTART.o",
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003EDE8",
+   "name": "func_8003EDE8",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd6",
+   "object": "TEMPO.o",
+   "callsites": 17,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003F104",
+   "name": "SsGetCurrentPoint",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd6",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003F144",
+   "name": "func_8003F144",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd6",
+   "object": "UT_GVA.o",
+   "callsites": 4,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003F380",
+   "name": "func_8003F380",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd6",
+   "object": "UT_GVAD.o",
+   "callsites": 4,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003F434",
+   "name": "SsUtKeyOnV",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd6",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8003F7C8",
+   "name": "SsUtKeyOffV",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd6",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800415A8",
+   "name": "func_800415A8",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd9",
+   "object": "S_M_F.o",
+   "callsites": 10,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800419B0",
+   "name": "func_800419B0",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd9",
+   "object": "VS_VFB.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80041A50",
+   "name": "SsVabOpenHeadSticky",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "snd9",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80041A80",
+   "name": "func_80041A80",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd9",
+   "object": "VS_VH.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80042154",
+   "name": "func_80042154",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd9",
+   "object": "VS_VTBP.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80042374",
+   "name": "func_80042374",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "snd9",
+   "object": null,
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004239C",
+   "name": "VSync",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libetc",
+   "object": null,
+   "callsites": 20,
+   "binaries": 4
+  },
+  {
+   "addr": "0x80042580",
+   "name": "ResetCallback",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libetc",
+   "object": null,
+   "callsites": 3,
+   "binaries": 2
+  },
+  {
+   "addr": "0x800425E0",
+   "name": "DMACallback",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libetc",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80042610",
+   "name": "func_80042610",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libetc",
+   "object": null,
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80042674",
+   "name": "StopCallback",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libetc",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043060",
+   "name": "func_80043060",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libetc",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043088",
+   "name": "StSetRing",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800430B8",
+   "name": "CdGetToc",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043300",
+   "name": "func_80043300",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "EVENT.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043410",
+   "name": "func_80043410",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "SYS.o",
+   "callsites": 5,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043420",
+   "name": "func_80043420",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "SYS.o",
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800434BC",
+   "name": "func_800434BC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "SYS.o",
+   "callsites": 15,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004355C",
+   "name": "func_8004355C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 16,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800435B4",
+   "name": "CdReadyCallback",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 12,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800435CC",
+   "name": "func_800435CC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "SYS.o",
+   "callsites": 24,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80043704",
+   "name": "func_80043704",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "SYS.o",
+   "callsites": 5,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043830",
+   "name": "func_80043830",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "SYS.o",
+   "callsites": 6,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80043974",
+   "name": "CdMix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043994",
+   "name": "func_80043994",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 14,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043A18",
+   "name": "CdIntToPos",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 11,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80043B1C",
+   "name": "CdPosToInt",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 8,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80045374",
+   "name": "CdSearchFile",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 4,
+   "binaries": 2
+  },
+  {
+   "addr": "0x8004657C",
+   "name": "CdRead2",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80046630",
+   "name": "func_80046630",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "TYPE.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004674C",
+   "name": "func_8004674C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": "TYPE.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800468FC",
+   "name": "func_800468FC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libcd1",
+   "object": null,
+   "callsites": 4,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80046ABC",
+   "name": "StSetStream",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80046B44",
+   "name": "StFreeRing",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80046C38",
+   "name": "StGetNext",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80046D1C",
+   "name": "StCdInterrupt",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libcd2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004787C",
+   "name": "func_8004787C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte1",
+   "object": "GEO_00.o",
+   "callsites": 1354,
+   "binaries": 90
+  },
+  {
+   "addr": "0x80047948",
+   "name": "func_80047948",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte1",
+   "object": "GEO_01.o",
+   "callsites": 966,
+   "binaries": 90
+  },
+  {
+   "addr": "0x80047B3C",
+   "name": "csqrt",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte1",
+   "object": null,
+   "callsites": 81,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80047BD8",
+   "name": "catan",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80047CB4",
+   "name": "InitGeom",
+   "name_source": "inferred",
+   "evidence": "sets H=0x3E8, ZSF3/ZSF4, DQA/DQB, OFX=OFY=0 (asm/main.s func_80047CB4)",
+   "segment": "libgte1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80047D3C",
+   "name": "func_80047D3C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte23",
+   "object": null,
+   "callsites": 503,
+   "binaries": 83
+  },
+  {
+   "addr": "0x80047E58",
+   "name": "func_80047E58",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte23",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80047E6C",
+   "name": "VectorNormal",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte23",
+   "object": null,
+   "callsites": 3,
+   "binaries": 3
+  },
+  {
+   "addr": "0x80047E98",
+   "name": "VectorNormalSS",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte23",
+   "object": null,
+   "callsites": 774,
+   "binaries": 83
+  },
+  {
+   "addr": "0x8004806C",
+   "name": "gteMIMefunc",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte23",
+   "object": null,
+   "callsites": 161,
+   "binaries": 81
+  },
+  {
+   "addr": "0x800480EC",
+   "name": "SquareRoot12",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte23",
+   "object": null,
+   "callsites": 241,
+   "binaries": 81
+  },
+  {
+   "addr": "0x8004818C",
+   "name": "MulMatrix0",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte2",
+   "object": null,
+   "callsites": 18,
+   "binaries": 17
+  },
+  {
+   "addr": "0x8004829C",
+   "name": "MulRotMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004838C",
+   "name": "CompMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte3",
+   "object": null,
+   "callsites": 4,
+   "binaries": 3
+  },
+  {
+   "addr": "0x800484EC",
+   "name": "ApplyMatrixLV",
+   "name_source": "inferred",
+   "evidence": "func_80053050/80052FCC call it as (m, m2->t, &v) for the translation part of a coordinate product",
+   "segment": "libgte3",
+   "object": null,
+   "callsites": 918,
+   "binaries": 86
+  },
+  {
+   "addr": "0x8004864C",
+   "name": "ApplyRotMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte3",
+   "object": null,
+   "callsites": 245,
+   "binaries": 82
+  },
+  {
+   "addr": "0x8004867C",
+   "name": "PushMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte3",
+   "object": null,
+   "callsites": 7,
+   "binaries": 7
+  },
+  {
+   "addr": "0x8004871C",
+   "name": "PopMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte3",
+   "object": null,
+   "callsites": 7,
+   "binaries": 7
+  },
+  {
+   "addr": "0x800487BC",
+   "name": "ReadRotMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte3",
+   "object": null,
+   "callsites": 7,
+   "binaries": 7
+  },
+  {
+   "addr": "0x8004880C",
+   "name": "SetMulMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte4",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004891C",
+   "name": "CompMatrixLV",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte4",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80048B6C",
+   "name": "ApplyRotMatrixLV",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte4",
+   "object": null,
+   "callsites": 176,
+   "binaries": 82
+  },
+  {
+   "addr": "0x80048CAC",
+   "name": "SetMulRotMatrix",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte5",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80048D9C",
+   "name": "MulMatrix",
+   "name_source": "inferred",
+   "evidence": "func_80053050: rotation product into the first matrix (m1 = m1 * m2)",
+   "segment": "libgte5",
+   "object": null,
+   "callsites": 90,
+   "binaries": 88
+  },
+  {
+   "addr": "0x80048EAC",
+   "name": "MulMatrix2",
+   "name_source": "inferred",
+   "evidence": "func_80052FCC: rotation product into the second matrix (m2 = m1 * m2); GsSetLightMatrix uses it too",
+   "segment": "libgte5",
+   "object": null,
+   "callsites": 1292,
+   "binaries": 82
+  },
+  {
+   "addr": "0x80048FBC",
+   "name": "ApplyMatrixSV",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte5",
+   "object": null,
+   "callsites": 2644,
+   "binaries": 87
+  },
+  {
+   "addr": "0x8004901C",
+   "name": "ScaleMatrix",
+   "name_source": "inferred",
+   "evidence": "column scaling m[i][j] * v[j] >> 12; GsSortSprite calls it with (scalex, scaley, 0)",
+   "segment": "libgte5",
+   "object": null,
+   "callsites": 17,
+   "binaries": 8
+  },
+  {
+   "addr": "0x8004914C",
+   "name": "SetRotMatrix",
+   "name_source": "shape",
+   "evidence": null,
+   "segment": "libgte6",
+   "object": null,
+   "callsites": 1775,
+   "binaries": 83
+  },
+  {
+   "addr": "0x8004917C",
+   "name": "SetLightMatrix",
+   "name_source": "shape",
+   "evidence": null,
+   "segment": "libgte6",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800491AC",
+   "name": "SetTransMatrix",
+   "name_source": "shape",
+   "evidence": null,
+   "segment": "libgte6",
+   "object": null,
+   "callsites": 1691,
+   "binaries": 83
+  },
+  {
+   "addr": "0x800491CC",
+   "name": "ReadGeomOffset",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte6",
+   "object": null,
+   "callsites": 7,
+   "binaries": 7
+  },
+  {
+   "addr": "0x800491EC",
+   "name": "ReadGeomScreen",
+   "name_source": "shape",
+   "evidence": null,
+   "segment": "libgte6",
+   "object": null,
+   "callsites": 94,
+   "binaries": 80
+  },
+  {
+   "addr": "0x800491FC",
+   "name": "SetBackColor",
+   "name_source": "shape",
+   "evidence": null,
+   "segment": "libgte6",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004921C",
+   "name": "SetGeomOffset",
+   "name_source": "shape",
+   "evidence": null,
+   "segment": "libgte6",
+   "object": null,
+   "callsites": 13,
+   "binaries": 7
+  },
+  {
+   "addr": "0x8004923C",
+   "name": "SetGeomScreen",
+   "name_source": "shape",
+   "evidence": null,
+   "segment": "libgte7",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800492FC",
+   "name": "Square12",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte24",
+   "object": null,
+   "callsites": 81,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80049324",
+   "name": "Square0",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte24",
+   "object": null,
+   "callsites": 201,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80049440",
+   "name": "func_80049440",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte24",
+   "object": null,
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8004945C",
+   "name": "RotTransSV",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte8",
+   "object": null,
+   "callsites": 1083,
+   "binaries": 84
+  },
+  {
+   "addr": "0x8004955C",
+   "name": "RotTransPers",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte8",
+   "object": null,
+   "callsites": 1228,
+   "binaries": 82
+  },
+  {
+   "addr": "0x8004958C",
+   "name": "RotTransPers3",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte8",
+   "object": null,
+   "callsites": 6,
+   "binaries": 2
+  },
+  {
+   "addr": "0x800495EC",
+   "name": "func_800495EC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte9",
+   "object": null,
+   "callsites": 7,
+   "binaries": 4
+  },
+  {
+   "addr": "0x8004961C",
+   "name": "RotTransPers4",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte10",
+   "object": null,
+   "callsites": 11,
+   "binaries": 8
+  },
+  {
+   "addr": "0x8004969C",
+   "name": "RotNclip4",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte11",
+   "object": null,
+   "callsites": 4,
+   "binaries": 4
+  },
+  {
+   "addr": "0x8004974C",
+   "name": "func_8004974C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte11",
+   "object": null,
+   "callsites": 8,
+   "binaries": 8
+  },
+  {
+   "addr": "0x8004978C",
+   "name": "RotMatrix",
+   "name_source": "inferred",
+   "evidence": "three angles through the packed sin/cos table D_8006DF1C into m; GsSortSprite calls it with (0, 0, rotate/360)",
+   "segment": "libgte25",
+   "object": "FGO_01.o",
+   "callsites": 175,
+   "binaries": 82
+  },
+  {
+   "addr": "0x80049A1C",
+   "name": "RotMatrixYXZ",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte25",
+   "object": null,
+   "callsites": 2431,
+   "binaries": 92
+  },
+  {
+   "addr": "0x80049CAC",
+   "name": "func_80049CAC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgte25",
+   "object": "FGO_03.o",
+   "callsites": 1485,
+   "binaries": 116
+  },
+  {
+   "addr": "0x80049F3C",
+   "name": "RotMatrixX",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte25",
+   "object": null,
+   "callsites": 244,
+   "binaries": 82
+  },
+  {
+   "addr": "0x8004A0DC",
+   "name": "RotMatrixY",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte25",
+   "object": null,
+   "callsites": 347,
+   "binaries": 91
+  },
+  {
+   "addr": "0x8004A27C",
+   "name": "RotMatrixZ",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte25",
+   "object": null,
+   "callsites": 254,
+   "binaries": 88
+  },
+  {
+   "addr": "0x8004CFEC",
+   "name": "ratan2",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte16",
+   "object": null,
+   "callsites": 4606,
+   "binaries": 85
+  },
+  {
+   "addr": "0x8004D504",
+   "name": "ApplyTransposeMatrixLV",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgte17",
+   "object": null,
+   "callsites": 810,
+   "binaries": 82
+  },
+  {
+   "addr": "0x8005080C",
+   "name": "GsSortBg",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs7",
+   "object": null,
+   "callsites": 80,
+   "binaries": 80
+  },
+  {
+   "addr": "0x80051044",
+   "name": "GsSortFastBg",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs7",
+   "object": null,
+   "callsites": 80,
+   "binaries": 80
+  },
+  {
+   "addr": "0x80051DC8",
+   "name": "GsSortLine",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs2",
+   "object": null,
+   "callsites": 1120,
+   "binaries": 80
+  },
+  {
+   "addr": "0x80051F34",
+   "name": "GsSortSprite",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs2",
+   "object": null,
+   "callsites": 80,
+   "binaries": 80
+  },
+  {
+   "addr": "0x80052460",
+   "name": "GsSortFastSprite",
+   "name_source": "inferred",
+   "evidence": "libgs object 2D_SP1; builds E1 + SPRT (0x64) from a GsSPRITE without scale/rotate and links it into a GsOT",
+   "segment": "libgs3",
+   "object": null,
+   "callsites": 321,
+   "binaries": 81
+  },
+  {
+   "addr": "0x800525DC",
+   "name": "func_800525DC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs8",
+   "object": "GS_001.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800527C4",
+   "name": "GsInitGraph2",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs8",
+   "object": null,
+   "callsites": 2,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80052D90",
+   "name": "GsInitCoordinate2",
+   "name_source": "inferred",
+   "evidence": "copies GsIDMATRIX into coord, sets super, clears flag, links super->sub (repo src/main/80052d90.c)",
+   "segment": "libgs4",
+   "object": null,
+   "callsites": 101,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80052E38",
+   "name": "GsSetLsMatrix",
+   "name_source": "inferred",
+   "evidence": "SetRotMatrix(m) + SetTransMatrix(m) (repo src/main/80052e38.c)",
+   "segment": "libgs4",
+   "object": null,
+   "callsites": 92,
+   "binaries": 80
+  },
+  {
+   "addr": "0x80052F04",
+   "name": "func_80052F04",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs4",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80053178",
+   "name": "func_80053178",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs4",
+   "object": "GS_107.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80053218",
+   "name": "func_80053218",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs4",
+   "object": "GS_107.o",
+   "callsites": 4,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80053290",
+   "name": "GsMapModelingData",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs4",
+   "object": null,
+   "callsites": 10,
+   "binaries": 4
+  },
+  {
+   "addr": "0x80053308",
+   "name": "GsSetProjection",
+   "name_source": "inferred",
+   "evidence": "libgs object GS_107; a SetGeomScreen(h) wrapper (repo src/main/80053308.c)",
+   "segment": "libgs4",
+   "object": "GS_107.o",
+   "callsites": 81,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80053328",
+   "name": "func_80053328",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs4",
+   "object": "GS_107.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800538EC",
+   "name": "GsSetLightMode",
+   "name_source": "inferred",
+   "evidence": "libgs object GS_108 (with GsSetFogParam); stores mode 0..3 (repo src/main/800538ec.c)",
+   "segment": "libgs5",
+   "object": "GS_108.o",
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80053978",
+   "name": "GsSetFogParam",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs5",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80053AF8",
+   "name": "GsSetAmbient",
+   "name_source": "inferred",
+   "evidence": "SetBackColor(r>>4, g>>4, b>>4) (repo src/main/80053af8.c)",
+   "segment": "libgs6",
+   "object": "GS_122.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80053D44",
+   "name": "func_80053D44",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": "GS_122.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80053EEC",
+   "name": "func_80053EEC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": "GS_131.o",
+   "callsites": 2,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80053F6C",
+   "name": "func_80053F6C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": "GS_131.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80054514",
+   "name": "GsGetLw",
+   "name_source": "inferred",
+   "evidence": "coordinate-hierarchy walk to a world matrix with the flag cache (repo src/main/80054514.c)",
+   "segment": "libgs6",
+   "object": "GS_133.o",
+   "callsites": 100,
+   "binaries": 81
+  },
+  {
+   "addr": "0x800547D8",
+   "name": "GsGetLs",
+   "name_source": "inferred",
+   "evidence": "GsGetLw-shaped walk, then multiplied with the world-screen matrix (repo src/main/800547d8.c)",
+   "segment": "libgs6",
+   "object": "GS_134.o",
+   "callsites": 91,
+   "binaries": 80
+  },
+  {
+   "addr": "0x80054AAC",
+   "name": "GsGetLws",
+   "name_source": "inferred",
+   "evidence": "GsGetLw/GsGetLs pair in one walk, three arguments (repo src/main/80054aac.c)",
+   "segment": "libgs6",
+   "object": "GS_135.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80054DCC",
+   "name": "GsSetRefView2L",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": null,
+   "callsites": 80,
+   "binaries": 80
+  },
+  {
+   "addr": "0x800553D8",
+   "name": "GsLinkObject5",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800553F4",
+   "name": "GsPresetObject",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80055D40",
+   "name": "func_80055D40",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": "PRESET2.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80056F18",
+   "name": "func_80056F18",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": "OBJT.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80057094",
+   "name": "func_80057094",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgs6",
+   "object": "OBJT2.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058890",
+   "name": "func_80058890",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": "EXT.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058A4C",
+   "name": "func_80058A4C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": "EXT.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058B04",
+   "name": "SetDefDispEnv",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 4,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80058B40",
+   "name": "GetTPage",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 277,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80058B7C",
+   "name": "GetClut",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 9,
+   "binaries": 4
+  },
+  {
+   "addr": "0x80058C6C",
+   "name": "AddPrim",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 542,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80058CE4",
+   "name": "CatPrim",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058D20",
+   "name": "SetSemiTrans",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 2,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80058D70",
+   "name": "SetPolyF3",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 82,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80058D84",
+   "name": "SetPolyFT3",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058D98",
+   "name": "SetPolyG3",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058DAC",
+   "name": "SetPolyGT3",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058DC0",
+   "name": "SetPolyF4",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058DD4",
+   "name": "SetPolyFT4",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058DE8",
+   "name": "SetPolyG4",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058DFC",
+   "name": "SetPolyGT4",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058E9C",
+   "name": "SetLineF2",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 163,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80058EB0",
+   "name": "SetLineG2",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 82,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80058EE4",
+   "name": "SetLineG3",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80058F24",
+   "name": "SetLineG4",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80059234",
+   "name": "func_80059234",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 7,
+   "binaries": 2
+  },
+  {
+   "addr": "0x800594CC",
+   "name": "func_800594CC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800595FC",
+   "name": "DrawSyncCallback",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80059658",
+   "name": "SetDispMask",
+   "name_source": "inferred",
+   "evidence": "called with 1 after the first frame is set up (resident md_MAIN_003)",
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 9,
+   "binaries": 3
+  },
+  {
+   "addr": "0x800596F4",
+   "name": "DrawSync",
+   "name_source": "inferred",
+   "evidence": "main loop: func_800596F4(0) right before VSync (vendor src/boot.c)",
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 88,
+   "binaries": 82
+  },
+  {
+   "addr": "0x80059888",
+   "name": "func_80059888",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 171,
+   "binaries": 82
+  },
+  {
+   "addr": "0x800599B8",
+   "name": "LoadImage",
+   "name_source": "inferred",
+   "evidence": "called (RECT *, data) by func_800184F0 per texture record (vendor src/800.c:5761ff)",
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 345,
+   "binaries": 84
+  },
+  {
+   "addr": "0x80059A1C",
+   "name": "StoreImage",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": null,
+   "callsites": 87,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80059A80",
+   "name": "MoveImage",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": null,
+   "callsites": 367,
+   "binaries": 81
+  },
+  {
+   "addr": "0x80059BFC",
+   "name": "ClearOTagR",
+   "name_source": "inferred",
+   "evidence": "main loop: (OT base, 0x1000) and (OT, 4) each frame (vendor src/boot.c)",
+   "segment": "libgpu2",
+   "object": null,
+   "callsites": 5,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80059CF4",
+   "name": "DrawOTag",
+   "name_source": "inferred",
+   "evidence": "main loop passes OT base + 0x3FFC after CatPrim (vendor src/boot.c)",
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 5,
+   "binaries": 2
+  },
+  {
+   "addr": "0x80059D68",
+   "name": "PutDrawEnv",
+   "name_source": "inferred",
+   "evidence": "main loop passes &state[buf * 92 + 0x38]: a 0x5C-byte DRAWENV (vendor src/boot.c)",
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80059FC0",
+   "name": "PutDispEnv",
+   "name_source": "inferred",
+   "evidence": "main loop passes &state[buf * 20 + 0x14C]: a 0x14-byte DISPENV (vendor src/boot.c)",
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 3,
+   "binaries": 2
+  },
+  {
+   "addr": "0x8005A600",
+   "name": "func_8005A600",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": "SYS.o",
+   "callsites": 442,
+   "binaries": 86
+  },
+  {
+   "addr": "0x8005A658",
+   "name": "SetDrawEnv",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libgpu2",
+   "object": null,
+   "callsites": 160,
+   "binaries": 80
+  },
+  {
+   "addr": "0x8005C2C8",
+   "name": "bzero",
+   "name_source": "inferred",
+   "evidence": "only function of Psy-Q object BZERO.o",
+   "segment": "libc2_1",
+   "object": "BZERO.o",
+   "callsites": 2,
+   "binaries": 2
+  },
+  {
+   "addr": "0x8005C2F8",
+   "name": "getchar",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libc2_1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005C324",
+   "name": "memcpy",
+   "name_source": "inferred",
+   "evidence": "symbols.resident.txt: memcpy = 0x8005C324 (libc2 MEMCPY.o)",
+   "segment": "libc2_1",
+   "object": "MEMSET.o",
+   "callsites": 401,
+   "binaries": 81
+  },
+  {
+   "addr": "0x8005C358",
+   "name": "memset",
+   "name_source": "inferred",
+   "evidence": "Psy-Q object MEMSET.o",
+   "segment": "libc2_1",
+   "object": "MEMSET.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005C388",
+   "name": "putchar",
+   "name_source": "inferred",
+   "evidence": "Psy-Q object PUTCHAR.o",
+   "segment": "libc2_1",
+   "object": "PUTCHAR.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005C49C",
+   "name": "rand",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libc2_1",
+   "object": null,
+   "callsites": 5819,
+   "binaries": 100
+  },
+  {
+   "addr": "0x8005C4CC",
+   "name": "srand",
+   "name_source": "inferred",
+   "evidence": "sw a0, D_80078980; jr ra (first function of the object at 8005C4CC)",
+   "segment": "libc2_1",
+   "object": "STRCMP.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005C540",
+   "name": "strcpy",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libc2_1",
+   "object": null,
+   "callsites": 114,
+   "binaries": 85
+  },
+  {
+   "addr": "0x8005C604",
+   "name": "printf",
+   "name_source": "inferred",
+   "evidence": "Psy-Q object PRNT.o",
+   "segment": "libc2_1",
+   "object": "PRNT.o",
+   "callsites": 4,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005CE18",
+   "name": "InitHeap",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libapi1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005CF08",
+   "name": "func_8005CF08",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libapi1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005CF18",
+   "name": "func_8005CF18",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libapi1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005D06C",
+   "name": "StopRCnt",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libapi1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005D0F8",
+   "name": "PadStartCom",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libpad1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005D118",
+   "name": "PadStopCom",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libpad1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005D184",
+   "name": "PadGetState",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libpad1",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005D244",
+   "name": "PadInfoMode",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libpad1",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005D4B8",
+   "name": "PadSetActAlign",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libpad1",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005D538",
+   "name": "PadSetAct",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libpad1",
+   "object": null,
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005F0C8",
+   "name": "PadInitDirect",
+   "name_source": "symbol",
+   "evidence": null,
+   "segment": "libpad2",
+   "object": null,
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005FC68",
+   "name": "func_8005FC68",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005FCB8",
+   "name": "func_8005FCB8",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005FD58",
+   "name": "func_8005FD58",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8005FFB4",
+   "name": "func_8005FFB4",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x8006023C",
+   "name": "func_8006023C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 3,
+   "binaries": 1
+  },
+  {
+   "addr": "0x800603BC",
+   "name": "func_800603BC",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 20,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80060404",
+   "name": "func_80060404",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80060614",
+   "name": "func_80060614",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 4,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80060AE0",
+   "name": "func_80060AE0",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80060D9C",
+   "name": "func_80060D9C",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 2,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80061024",
+   "name": "func_80061024",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80061114",
+   "name": "func_80061114",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 1,
+   "binaries": 1
+  },
+  {
+   "addr": "0x80061524",
+   "name": "func_80061524",
+   "name_source": "unnamed",
+   "evidence": null,
+   "segment": "libmcrd1",
+   "object": "LIBMCRD.o",
+   "callsites": 1,
+   "binaries": 1
+  }
+ ]
+}

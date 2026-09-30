@@ -1,0 +1,44 @@
+# SC03 member 0054 — vendor counterpart vendor/bfm-decomp/src/md_SC03_054 (Druthulu/BFM-decomp;
+# vendor md_SC03_ numbering is 0-based, the same as extracted/overlays/sc03/NNNN.bin).
+#
+# CONTAINER: PAC chunk chain; the code payload (type-0x101 chunk + 0x800) starts at file offset 0x800 and loads at
+# 0x801EF468, so file offset 0 maps to 0x801EEC68 (the registry base). The payload's
+# first word is data; code is [0x801EF558, 0x801F0148) (0xBF0 bytes), taken from the
+# vendor's function starts and the last jr $ra before the first data symbol it references.
+name: sc03_0054
+sha1: 2f75223df99517f4fc50a1d5cd505740c8d028e4
+
+options:
+  platform: psx
+  basename: sc03_0054
+  base_path: ../
+  target_path: extracted/overlays/sc03/0054.bin
+  asm_path: asm/overlays/sc03_0054
+  src_path: src/overlays/sc03_0054
+  build_path: build
+  ld_script_path: config/sc03_0054.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc03_0054.auto.txt
+    - config/symbol_addrs.sc03_0054.txt
+  undefined_syms_auto_path: config/undefined_syms.sc03_0054.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc03_0054.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc03_0054
+    type: code
+    start: 0x0
+    vram: 0x801EEC68
+    subsegments:
+      - [0x0, data, sc03_0054_container]
+      - [0x800, data, sc03_0054_hdr]
+      - [0x8F0, asm, sc03_0054]
+      - [0x14E0, data, sc03_0054_tail]
+
+  - [0x3000]

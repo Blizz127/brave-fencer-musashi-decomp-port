@@ -1,0 +1,45 @@
+# sc06_0024 — extracted/overlays/sc06/0024.pac0.bin. Vendor counterpart vendor/bfm-decomp/src/ov_SC06_024 (Druthulu/BFM-decomp).
+# Decoded LZSS code chunk (PAC type 4) of extracted/overlays/sc06/0024.pac0.bin, written by tools/decode_sc_overlays.py (gitignored).
+# The code payload loads at 0x80128158, so file offset 0 maps to 0x80128158 (the registry base).
+# Code is 0x80128158..0x8018F7A4: every vendor function start lands on a function start in these
+# bytes, and the end is the last function's final `jr $ra` (no branch reaches past it).
+# Function starts: config/symbol_addrs.sc06_0024.auto.txt (see its header).
+name: sc06_0024
+sha1: a33ee9abeca26bb9c29d8efa3abf6566f79a00a5
+
+options:
+  platform: psx
+  basename: sc06_0024
+  # Paths resolve relative to this file's directory.
+  base_path: ../
+  target_path: extracted/overlays/sc06/0024.pac0.bin
+  asm_path: asm/overlays/sc06_0024
+  src_path: src/overlays/sc06_0024
+  build_path: build
+  ld_script_path: config/sc06_0024.ld
+  symbol_addrs_path:
+    - config/symbol_addrs.sc06_0024.auto.txt
+    - config/symbol_addrs.sc06_0024.txt
+  undefined_syms_auto_path: config/undefined_syms.sc06_0024.auto.txt
+  undefined_funcs_auto_path: config/undefined_funcs.sc06_0024.auto.txt
+  create_undefined_syms_auto: True
+  create_undefined_funcs_auto: True
+  create_asm_dependencies: True
+  find_file_boundaries: True
+  use_legacy_include_asm: False
+  asm_inc_header: ""
+  section_order: [".text", ".data", ".rodata", ".bss"]
+
+segments:
+  - name: sc06_0024
+    type: code
+    start: 0x0
+    vram: 0x80128158
+    subsegments:
+      # Code: vram 0x80128158..0x8018F7A4.
+      - [0x0, asm, sc06_0024]
+      # Data after the code, through the end of the member.
+      - [0x6764C, data, sc06_0024_tail]
+
+  # End marker: the member is 0xB980F bytes.
+  - [0xB980F]

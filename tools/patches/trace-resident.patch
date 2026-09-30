@@ -1,0 +1,78 @@
+--- a/pc_port/mips_formatter.c	2026-09-28 20:59:19.608748594 +0000
++++ b/pc_port/mips_formatter.c	2026-09-28 20:59:19.614046280 +0000
+@@ -12082,6 +12082,38 @@
+ static uint32_t *g_trace_caller;
+ static char *g_trace_kind;
+ static uint32_t *g_trace_insns; /* MUSASHI_TRACE_INSNS: interpreted steps per PC */
++/* MUSASHI_TRACE_RESIDENT=<path>: for every function entry outside the main
++ * EXE text, the FNV-1a 64 digest of the 32 bytes at the target, counted per
++ * (target, digest). Offline, the digest is matched against each overlay
++ * member's bytes at that address (tools/port_matched_ratio.py), which names
++ * the resident member exactly. Observe-only. */
++enum { RESIDENT_CAP = 1u << 15, RESIDENT_BYTES = 32u };
++typedef struct ResidentRow { uint32_t target, count; uint64_t digest; } ResidentRow;
++static ResidentRow *g_trace_resident;
++static unsigned g_trace_resident_n, g_trace_resident_dropped;
++static void resident_note(uint32_t target) {
++    const uint8_t *bytes;
++    uint64_t h = 0xcbf29ce484222325ull;
++    uint32_t off = target & 0x1fffffffu, slot, i;
++    if (!g_trace_resident || off + RESIDENT_BYTES > MUSASHI_RAM_SIZE) return;
++    bytes = g_fetch_memory ? g_fetch_memory->bytes + off : NULL;
++    if (!bytes) return;
++    for (i = 0; i < RESIDENT_BYTES; ++i) { h ^= bytes[i]; h *= 0x100000001b3ull; }
++    slot = (uint32_t)((target >> 2) ^ (uint32_t)h ^ (uint32_t)(h >> 32)) & (RESIDENT_CAP - 1u);
++    for (i = 0; i < RESIDENT_CAP; ++i, slot = (slot + 1u) & (RESIDENT_CAP - 1u)) {
++        ResidentRow *row = &g_trace_resident[slot];
++        if (row->count && row->target == target && row->digest == h) {
++            if (row->count != UINT32_MAX) ++row->count;
++            return;
++        }
++        if (!row->count) {
++            if (g_trace_resident_n >= RESIDENT_CAP / 2u) { ++g_trace_resident_dropped; return; }
++            row->target = target; row->digest = h; row->count = 1u;
++            ++g_trace_resident_n;
++            return;
++        }
++    }
++}
+ static unsigned long g_trace_seq;
+ static TraceOther g_trace_other[TRACE_OTHER_MAX];
+ static unsigned g_trace_other_n;
+@@ -12138,6 +12170,18 @@
+             fclose(out);
+         }
+     }
++    if (g_trace_resident) {
++        const char *rpath = getenv("MUSASHI_TRACE_RESIDENT");
++        out = rpath && rpath[0] ? fopen(rpath, "w") : NULL;
++        if (out) {
++            fprintf(out, "# target fnv1a64_of_32_bytes count (dropped=%u)\n", g_trace_resident_dropped);
++            for (i = 0; i < RESIDENT_CAP; ++i)
++                if (g_trace_resident[i].count)
++                    fprintf(out, "%08x %016llx %u\n", g_trace_resident[i].target,
++                            (unsigned long long)g_trace_resident[i].digest, g_trace_resident[i].count);
++            fclose(out);
++        }
++    }
+     if (g_trace_file) fflush(g_trace_file);
+ }
+ 
+@@ -12165,6 +12209,8 @@
+                 g_trace_state = 1;
+                 if (getenv("MUSASHI_TRACE_INSNS") && getenv("MUSASHI_TRACE_INSNS")[0])
+                     g_trace_insns = calloc(TRACE_RAM_WORDS, sizeof(*g_trace_insns));
++                if (getenv("MUSASHI_TRACE_RESIDENT") && getenv("MUSASHI_TRACE_RESIDENT")[0])
++                    g_trace_resident = calloc(RESIDENT_CAP, sizeof(*g_trace_resident));
+             } else {
+                 fprintf(stderr, "native_boot: MUSASHI_TRACE_FUNCS unavailable (%s)\n", path);
+             }
+@@ -12186,6 +12232,8 @@
+             fflush(g_trace_file);
+         }
+         if (g_trace_counts[index] != UINT32_MAX) ++g_trace_counts[index];
++        /* overlay space: anything outside the main EXE's text */
++        if (g_trace_resident && (target & 0x1fffffffu) >= 0x63000u) resident_note(target);
+         return;
+     }
+     {

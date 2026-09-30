@@ -1,3 +1,21 @@
+Scope: this MIT license covers only the owner's original work in this
+repository: the native PC port and its host/platform layer (pc_port/), the
+tools and scripts written for this project (tools/), the tests (tests/), the
+build and split configuration (CMakeLists.txt, config/: addresses, sizes,
+names and hashes), the provenance template (provenance/) and the
+documentation (docs/, *.md).
+
+It does not cover:
+- Brave Fencer Musashi or any of its code, data, artwork, music, text or
+  trademarks, which belong to Square Enix (originally Square Co., Ltd.);
+- Sony's PlayStation BIOS or Psy-Q SDK;
+- the upstream decompilation Druthulu/BFM-decomp. Its tools and docs are
+  AGPL-3.0 and its decompiled game code (src/) carries no license at all;
+  none of it is included in this repository;
+- any other third-party component, each of which keeps its own license (see
+  NOTICE.md and CREDITS.md). The one adapted third-party passage
+  (pc_port/spu_voice_core.h, from PsyCross, MIT) carries its own notice.
+
 MIT License
 
 Copyright (c) 2026 Blizz127

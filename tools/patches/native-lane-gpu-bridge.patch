@@ -1,0 +1,193 @@
+diff -u -r a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt	2026-09-28 12:22:15.155495408 +0000
++++ b/CMakeLists.txt	2026-09-28 12:27:07.880184815 +0000
+@@ -484,7 +484,7 @@
+         pc_port/platform/bfm_plat_image.c    pc_port/platform/bfm_plat_font.c
+         pc_port/platform/bfm_plat_widescreen.c
+         pc_port/platform/bfm_plat_disc_check.c pc_port/platform/bfm_plat_sha256.c
+-        pc_port/platform/bfm_plat_watch.c
++        pc_port/platform/bfm_plat_watch.c    pc_port/platform/bfm_plat_gpu_bridge.c
+         pc_port/platform/psyq/bfm_psyq_compat.c
+         pc_port/platform/psyq/bfm_psyq_libgs.c
+         pc_port/platform/psyq/bfm_psyq_libgte.c)        # + psyq/psyq_psycross.c with PsyCross
+@@ -495,9 +495,11 @@
+         target_sources(bfm_plat PRIVATE
+             pc_port/platform/backends/renderer_psycross.c
+             pc_port/platform/backends/audio_sdl.c
+-            pc_port/platform/backends/input_sdl.c)
+-        # renderer_psycross.c needs C11 (PsyCross headers use static_assert)
++            pc_port/platform/backends/input_sdl.c
++            pc_port/platform/psyq/psyq_psycross.c)   # PsyQ compat wrappers on PsyCross
++        # PsyCross headers need C11 (static_assert)
+         set_source_files_properties(pc_port/platform/backends/renderer_psycross.c
++            pc_port/platform/psyq/psyq_psycross.c
+             PROPERTIES COMPILE_OPTIONS "-std=gnu11;-include;assert.h")
+         target_include_directories(bfm_plat PRIVATE
+             ${MUSASHI_PSYCROSS_DIR}/include pc_port/include)
+diff -u -r a/pc_port/gpu_controller.c b/pc_port/gpu_controller.c
+--- a/pc_port/gpu_controller.c	2026-09-28 12:22:15.077499667 +0000
++++ b/pc_port/gpu_controller.c	2026-09-28 12:26:04.349058122 +0000
+@@ -1152,6 +1152,7 @@
+ 
+ static int prim_commit(MusashiGpuController *controller) {
+     uint32_t opcode = controller->prim_data[0] >> 24;
++    if (controller->raster_disabled) return 1;   /* drawn by the bfm_plat bridge */
+     /* Bit 1 of every polygon/line/rectangle command selects semi-
+      * transparency. Textured polygons carry their own texpage (abr in bits
+      * 5-6); lines, rectangles and untextured polygons use the draw mode. */
+@@ -1523,6 +1524,9 @@
+         return 0;
+     }
+     if (!backend_bound(controller) || controller->faulted) return 0;
++    if (controller->tap &&
++        (address == MUSASHI_GPU_GPUREAD || address == MUSASHI_GPU_GPUSTAT))
++        (void)controller->tap(controller->tap_userdata, address, value);
+     if (address == MUSASHI_GPU_GPUREAD) {
+         opcode = value >> 24;
+         /* An open packet owns every following GP0 word. Pixel payloads may
+diff -u -r a/pc_port/include/musashi_gpu_controller.h b/pc_port/include/musashi_gpu_controller.h
+--- a/pc_port/include/musashi_gpu_controller.h	2026-09-28 12:22:14.901509275 +0000
++++ b/pc_port/include/musashi_gpu_controller.h	2026-09-28 12:22:51.290642035 +0000
+@@ -96,6 +96,14 @@
+     /* Pending GP0 polygon/sprite packet. Reset 00/01 discards it. */
+     uint8_t prim_needed, prim_got;
+     uint32_t prim_data[12];
++    /* Optional tee for the bfm_plat GPU bridge (pc_port/platform/
++     * bfm_plat_gpu_bridge.h): every GP0/GP1 port write is passed on before
++     * it is processed. With raster_disabled set, draw commands are parsed
++     * and retired as usual but not rasterised (FIFO, GPUSTAT, fills and
++     * VRAM transfers are unchanged). Both default to off (zeroed). */
++    int (*tap)(void *userdata, uint32_t address, uint32_t value);
++    void *tap_userdata;
++    int raster_disabled;
+     uint64_t drawn_pixels;
+     /* Semi-transparency of the primitive being rasterized (psx-spx GPU):
+      * semi = command bit 1; semi_mode = abr 0..3; semi_textured = blend only
+diff -u -r a/pc_port/native_boot.c b/pc_port/native_boot.c
+--- a/pc_port/native_boot.c	2026-09-28 12:22:15.086499175 +0000
++++ b/pc_port/native_boot.c	2026-09-28 12:28:56.943025310 +0000
+@@ -59,6 +59,15 @@
+     return n < first || (stride && (n % stride) == 0u);
+ }
+ 
++#ifdef MUSASHI_WITH_BFM_PLAT
++#include "bfm_plat_gpu_bridge.h"
++/* MUSASHI_GPU=bfm_plat: GP0/GP1 are teed into the bfm_plat GPU bridge and
++ * drawn by the bfm_plat renderer (MUSASHI_RENDERER, default psycross); the
++ * controller keeps the port protocol with its rasteriser off. Default cpu. */
++static BfmGpuBridge g_gpu_bridge;
++static int g_gpu_bridge_on;
++#endif
++
+ typedef struct NativeBoot {
+     MusashiBootMemory memory;
+     uint8_t list_tail_before[448];
+@@ -146,6 +155,15 @@
+     uint32_t guest_pending_cycles;
+ } NativeBoot;
+ 
++/* One presented frame: the bfm_plat renderer (via the GPU bridge) or the
++ * PsyCross scanout of the controller's VRAM. */
++static int present_frame(NativeBoot *boot) {
++#ifdef MUSASHI_WITH_BFM_PLAT
++    if (g_gpu_bridge_on) return bfm_gpu_bridge_vblank(&g_gpu_bridge) == 0;
++#endif
++    return musashi_gpu_psycross_present(&boot->gpu_renderer);
++}
++
+ /* Overlay member signatures without retail words: FNV-1a 64 over two
+  * loaded words that differ between members, compared with the digest of the
+  * member the port's ranges were carved from. */
+@@ -1424,7 +1442,7 @@
+             if (SDL_GL_GetCurrentContext() != boot->gpu_renderer.context)
+                 SDL_GL_MakeCurrent((SDL_Window *)boot->gpu_renderer.window, boot->gpu_renderer.context);
+         }
+-        (void)musashi_gpu_psycross_present(&boot->gpu_renderer);
++        (void)present_frame(boot);
+     }
+     if (boot->scene1_reached && boot->gpu.display.width == 320u && boot->gpu.display.height == 240u) {
+         if (boot->gte.write_count > 800u) {
+@@ -3340,7 +3358,7 @@
+         while (SDL_PollEvent(&event))
+             if (event.type == SDL_QUIT) return;
+         if (boot)
+-            (void)musashi_gpu_psycross_present(&boot->gpu_renderer);
++            (void)present_frame(boot);
+         SDL_Delay(16);
+     }
+ }
+@@ -3443,6 +3461,12 @@
+     snprintf(cfg.input, sizeof cfg.input, "null");
+     cfg.disc_path[0] = 0;      /* native_boot owns the disc and its identity check */
+     cfg.disc_search[0] = 0;
++    {
++        /* The bridge's renderer opens after PsyCross is up (gpu_bridge_attach);
++         * bfm_plat starts on the null renderer like the cpu path. */
++        const char *gpu = getenv("MUSASHI_GPU");          /* cpu | bfm_plat */
++        if (gpu && strcmp(gpu, "bfm_plat") == 0) cfg.gpu_path = BFM_GPU_BFM_PLAT;
++    }
+     if (bfm_plat_init(&cfg) != 0) {
+         fprintf(stderr, "native_boot: BFM_PLAT init refused; platform layer off\n");
+         return;
+@@ -3457,9 +3481,40 @@
+     if (bfm_plat_hooks_register_known() != 0)
+         fprintf(stderr, "native_boot: BFM_PLAT hook sites refused\n");
+     fprintf(stderr, "native_boot: BFM_PLAT up hook_sites=%u\n", (unsigned)bfm_plat_hooks_count());
++
+     musashi_formatter_set_entry_hook(plat_entry_hook, NULL);
+     musashi_formatter_set_overlay_hook(plat_overlay_hook, NULL);
+ }
++
++/* MUSASHI_GPU=bfm_plat, once PsyCross and the controller are up: open the
++ * bfm_plat renderer (MUSASHI_RENDERER, default psycross, drawing into the
++ * PsyCross context native_boot created) and tee the controller into the
++ * bridge. Any refusal leaves the cpu path. */
++static void gpu_bridge_attach(MusashiGpuController *gpu) {
++    const char *name = getenv("MUSASHI_RENDERER"), *selected = NULL;
++    BfmPlatOutput out;
++    if (!bfm_gpu_bridge_selected(bfm_plat_config())) return;
++    if (!name || !name[0]) name = "psycross";
++    memset(&out, 0, sizeof out);
++    out.window_width = 640;
++    out.window_height = 480;
++    out.internal_scale = 1;
++    out.aspect_num = 4;
++    out.aspect_den = 3;
++    if (bfm_plat_renderer_open(name, &out, &selected) != 0 || !selected ||
++        strcmp(selected, name) != 0) {
++        fprintf(stderr, "native_boot: GPU_PATH bfm_plat refused: renderer %s unavailable; cpu\n",
++                name);
++        (void)bfm_plat_renderer_open("null", &out, NULL);
++        return;
++    }
++    bfm_gpu_bridge_init(&g_gpu_bridge);
++    gpu->tap = bfm_gpu_bridge_tap;
++    gpu->tap_userdata = &g_gpu_bridge;
++    gpu->raster_disabled = 1;
++    g_gpu_bridge_on = 1;
++    fprintf(stderr, "native_boot: GPU_PATH bfm_plat renderer=%s\n", selected);
++}
+ #endif
+ 
+ int main(int argc, char **argv) {
+@@ -3618,7 +3673,10 @@
+         PsyX_Shutdown();
+         return 2;
+     }
+-    (void)musashi_gpu_psycross_present(&boot.gpu_renderer);
++#ifdef MUSASHI_WITH_BFM_PLAT
++    gpu_bridge_attach(&boot.gpu);
++#endif
++    (void)present_frame(&boot);
+     if (boot.media) {
+         const MusashiCdOwnedHardware hardware = {
+             .userdata=&boot, .current_thread=epoch_owner,
+@@ -4288,7 +4346,7 @@
+         if (!removed) cleanup_ok=0;
+     }
+     dump_display_vram(&boot);
+-    presentation_ok = musashi_gpu_psycross_present(&boot.gpu_renderer);
++    presentation_ok = present_frame(&boot);
+     hold_window(&boot);
+     gpu_removed = musashi_gpu_psycross_shutdown(&boot.gpu_renderer);
+     fprintf(stderr, "native_boot: graphics_init=%s blank_presented=%d gpu_removed=%d\n",
