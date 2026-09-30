@@ -12,6 +12,15 @@ included.
 ## About this project
 This is a passion project. I'm working hard on it, but it's made for fun and for everyone's enjoyment — free, non-commercial, and made by a fan. If you enjoy it, that's the whole point.
 
+## Milestones and progress
+
+Public releases now happen at milestones; the work in between ships as private
+checkpoint builds. The [Milestones](../../wiki/Milestones) wiki page has the
+definition of each milestone, the status of every segment and a dated
+changelog, and is updated at each checkpoint.
+
+**Next milestone: Chapter 1 playable end to end, with saving.**
+
 ## How to play
 
 ### 1. Download
