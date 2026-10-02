@@ -1,138 +1,111 @@
 # brave-fencer-musashi-decomp-port
 
-This is a native PC port of *Brave Fencer Musashi* (PlayStation, USA,
-SLUS-00726) for Linux (x86-64), with the tools of the matching decompilation
-it is built on. You play from **your own disc**. None of the game is
-included.
+An experimental PC port of *Brave Fencer Musashi* (PlayStation, USA,
+SLUS-00726). You play from **your own disc**; no game data or BIOS is included.
+The current runtime is **hybrid**: compiled host code plus a CPU interpreter.
+The fully native port remains a development goal.
 
-> **Early preview.** The port boots through the logos, the title and the
-> opening scene. The game hands you control and Musashi responds to input.
-> More of the game is being brought up.
+> **Public r38 — 2026-10-02:** Linux x86_64 is available. Forest rendering
+> fixes and isolated inn save/cold Continue checks passed. Windows is still
+> pending: the game has not built or run on Windows. Whole-game completion
+> and full graphics/audio fidelity are unverified.
 
 ## About this project
 This is a passion project. I'm working hard on it, but it's made for fun and for everyone's enjoyment — free, non-commercial, and made by a fan. If you enjoy it, that's the whole point.
 
 ## Milestones and progress
 
-Public releases now happen at milestones; the work in between ships as private
-checkpoint builds. The [Milestones](../../wiki/Milestones) wiki page has the
-definition of each milestone, the status of every segment and a dated
-changelog, and is updated at each checkpoint.
+Public releases mark selected improvements; an entire milestone may still
+be in progress. The [Milestones](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/wiki/Milestones)
+wiki page defines each milestone and records segment status and a dated
+changelog.
 
 **Next milestone: Chapter 1 playable end to end, with saving.**
 
 ## How to play
 
-### 1. Download
+These instructions match [bfm-r38-61c60516d](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/releases/tag/bfm-r38-61c60516d).
+Read the [setup guide](docs/SETUP.md) for prerequisites, controls, saves and troubleshooting.
 
-Get **the latest release** from the [Releases](../../releases) page:
+### Linux x86_64
 
-- `bfm-r24-fe4a59820-linux-x86_64.tar.gz` (or newer) is the port.
-- `SHA256SUMS` holds the checksums. Check them with `sha256sum -c SHA256SUMS`.
-
-Unpack the port anywhere. It unpacks into its own subfolder. For example:
-
-```sh
-mkdir -p ~/Games/bfm-port
-tar -xzf bfm-r24-fe4a59820-linux-x86_64.tar.gz -C ~/Games/bfm-port
-```
-
-It needs glibc 2.38 or newer, OpenGL, X11 or Wayland, and ALSA or
-PulseAudio/PipeWire. A normal desktop Linux or a Steam Deck already has all of
-these.
-
-### 2. Your disc
-
-You need a **.cue/.bin dump of your own Brave Fencer Musashi disc** (USA,
-SLUS-00726).
-
-- One-bin and per-track dumps both work.
-- A 2048-byte `.iso` does **not** work, because it is missing the CD-XA audio
-  and video data.
-- You don't need a BIOS. The port provides its own kernel services.
-
-Put the `.cue` and `.bin` files in `~/Games/brave-fencer-musashi/disc/`, or in
-a `disc/` folder next to `launch.sh` (for example
-`~/Games/bfm-port/bfm-r24-fe4a59820/disc/`). You can also pick the `.cue` when the
-port asks on first start. The port remembers your choice in
-`~/.config/bfm-port/disc`.
-
-### 3. Run
+Download `bfm-r38-61c60516d-linux-x86_64.tar.gz` and `SHA256SUMS` from the
+release page into the same directory, then:
 
 ```sh
-~/Games/bfm-port/bfm-r24-fe4a59820/launch.sh
+sha256sum -c SHA256SUMS
+mkdir -p "$HOME/Games/bfm-port"
+tar -xzf bfm-r38-61c60516d-linux-x86_64.tar.gz -C "$HOME/Games/bfm-port"
+"$HOME/Games/bfm-port/bfm-r38-61c60516d/launch.sh"
 ```
 
-Any extra arguments are passed to the port. To start the port directly, run
-`./musashi_native_boot --disc /path/to/your.cue` from that folder.
+Requires glibc **2.38+**, a C++ runtime with **GLIBCXX_3.4.32**, OpenGL
+and the desktop graphics/audio libraries listed in the setup guide.
+Put a `.cue`/`.bin` dump of **your own USA SLUS-00726 disc** in
+`~/Games/brave-fencer-musashi/disc/` or a `disc/` folder beside `launch.sh`.
+Keep all referenced tracks together. One-bin and per-track dumps work; a
+2048-byte `.iso` does not. A file picker is offered when available, or set
+`BFM_DISC="/path/to/your/game.cue"` when launching.
 
-**Steam Deck / Game Mode:** in Desktop Mode, open Steam and choose *Add a
-Game → Add a Non-Steam Game*. Browse to `~/Games/bfm-port/bfm-r24-fe4a59820/launch.sh` and add it. It then shows
-up in your library in Game Mode.
+For Steam Deck/Game Mode, add `launch.sh` as a non-Steam game and keep Steam
+Input enabled. Preserve earlier version folders and back up saves after
+quitting normally; no running game needs to be updated or restarted.
 
-### Controls
+### Windows
 
-You can use a game controller (the first one connected) or the keyboard.
+**No Windows game package is available yet.** Windows support is outstanding
+for this same release. The platform-name adapter cross-compiled, but the
+complete game failed configuration and still needs Windows host/ABI work,
+libraries and runtime qualification. There is no verified Windows install or
+run procedure yet. See [Windows status and game-data preparation](docs/SETUP.md#windows-status)
+for the exact limits and source-intended paths. Wine/Proton is unverified.
 
-| PlayStation | Controller | Keyboard |
-|---|---|---|
-| D-pad | D-pad or left stick | Arrow keys or WASD |
-| Cross | A | C (or K) |
-| Circle | B | V (or I) |
-| Square | X | X (or J) |
-| Triangle | Y | Z (or U) |
-| Start | Start | Enter |
-| Select | Back | Space |
-| L1 / R1 | LB / RB | Left Shift / Right Shift |
-| L2 / R2 | LT / RT | Left Ctrl / Right Ctrl |
+### Controls, saves and dev menu
 
-### Dev menu (off by default)
+- Gameplay: D-pad/left stick or arrows/WASD; controller A/B/X/Y correspond to
+  Cross/Circle/Square/Triangle, or keyboard C/V/X/Z. Enter is Start; Space is
+  Select. [Full controls](docs/SETUP.md#controls).
+- Save using the game's menus. The default Linux card is
+  `~/.local/state/bfm-port/bfm_card0.mcd`; `BFM_SAVE_DIR` selects a separate
+  card directory. Inn save and cold Continue passed isolated tests.
+  [Save/config locations and limitations](docs/SETUP.md#saves-settings-and-files-on-linux).
+- The packaged dev menu is enabled by default, with cheats initially off.
+  Open with **F8** or **Back/Select+Start** on one controller. Navigate with
+  Up/Down or D-pad/left stick; Enter/A selects, Esc/B goes back. **F1 is help.**
+  The game keeps running while the menu is open.
+- The menu offers 29 warp destinations, an empty Finish Area page, HP/BP
+  refills, Drans/time actions, fast-forward and screenshots. See the
+  [current Dev Menu wiki](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/wiki/Dev-Menu)
+  for exact options, effects and precautions.
 
-```sh
-BFM_DEV_MENU=1 ~/Games/bfm-port/bfm-r24-fe4a59820/launch.sh
-```
-
-To open the menu, press **F1** on the keyboard. On a controller, press
-**L3 + R3** (both sticks) or the **Guide** button.
-
-- Move with up/down.
-- Confirm with Enter or C (A on a controller).
-- Go back with Esc or V (B on a controller).
-
-The menu has opt-in cheats: Infinite HP, Infinite BP and Max Drans. Warps are
-added to the menu once each one has been tested in the port.
-
-### Troubleshooting
-
-- Errors are shown on screen. The log of the last run is at
-  `~/.local/state/bfm-port/last-run.log`. Please attach it to bug reports.
-- **"No disc image found"**: put your `.cue` and `.bin` in
-  `~/Games/brave-fencer-musashi/disc/` and start again.
-- **"not the USA release"**: the port checks your files against the USA disc
-  (SLUS-00726). This message means your dump is of a different release, or
-  it has been modified or patched. Make a clean dump of the USA disc.
-- **An `.iso` is refused**: use a `.cue/.bin` dump instead (see above).
-
-### FAQ
-
-- **Do I need a BIOS?** No.
-- **Is the game included?** No, you bring your own disc. Nothing of the game
-  is distributed here: no disc image, no game files and no assets.
-- **Can I play it through?** Not yet. This is an early preview (see Status).
-- **Windows or macOS?** Only Linux x86-64 for now.
+The log is `~/.local/state/bfm-port/last-run.log` by default. See
+[troubleshooting](docs/SETUP.md#troubleshooting). General `config.ini`
+settings are not reliably loaded by r38; the setup guide lists working
+launcher controls instead.
 
 ## Status
 
-This is an early preview. The port boots through the logos, the title and
-the opening scene. The game hands you control and Musashi responds to input.
-More of the game is being brought up.
+r38 fixes forest frames going dark and includes tested inn saving and cold
+Continue. Forest, village and the recorded four-scene attract route passed
+scoped checks. Attract still stops at known refusal `800495ec`; later
+unsupported code may also stop. Automated checks used null audio, and do
+not establish hardware audio fidelity or whole-game completion.
 
-The goal is a port that is 1:1 with the North American release. Mods, cheats
-and enhancements are opt-in and off by default.
-[docs/KNOWN-DIVERGENCES.md](docs/KNOWN-DIVERGENCES.md) lists everything known
-to differ from the PlayStation original, and everything not compared yet.
+The goal remains a faithful, fully native port. Original rendering is the
+release default. Cheats start off, even though the dev menu is enabled.
+[Milestones](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/wiki/Milestones)
+and [known divergences](docs/KNOWN-DIVERGENCES.md) distinguish completed
+checks from remaining work.
 
 ## Build from source
+
+**Source snapshot limitation:** the public r38 tag points to sanitized
+snapshot `ec620c78dd5f68a166f6565f7c2d8539e9c378a0`; its runtime binaries
+were built from `61c60516d18bf6402e6dbd937d8c8d18ebd1af4b`. GitHub's automatic
+source archives and the historical build instructions below do not
+reproduce the newer r38 binary. Windows compilation is not yet supported
+by this recipe. Public player instructions above describe the release
+artifact, not the older source snapshot's menu behavior.
 
 This repository holds the port (`pc_port/`), its tools (`tools/`), tests,
 configuration and documentation, and the owner-authored matched C that the
@@ -146,16 +119,15 @@ original compiler reproduces the original machine code. It is published for
 study, interoperability and preservation, like other matching
 decompilations; it does not grant any rights in *Brave Fencer Musashi*.
 
-The release binary is built with `-DMUSASHI_NATIVE_LANE=ON
+The r38 release binary is built with `-DMUSASHI_NATIVE_LANE=ON
 -DMUSASHI_LANE_OWN_CODE_ONLY=ON`. With these options the native lane compiles
 only owner-authored matched C listed in
 [config/lane_own_code_allow.txt](config/lane_own_code_allow.txt) (guest
 addresses only). Everything else runs interpreted from your own disc,
 including every function whose recorded origin names the upstream
-decompilation or Sony/Psy-Q code. This repository builds that binary with the
-steps below (it compiles 210 functions natively; the release also compiles 12
-more whose sources use an m2c-derived helper header that is not published
-here).
+decompilation or Sony/Psy-Q code. The commands below describe the older
+sanitized source snapshot. Its historical function counts do not describe
+r38; the current release's admitted sources passed the no-m2c-macro guard.
 
 A build needs the following:
 
