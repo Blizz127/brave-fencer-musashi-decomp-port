@@ -53,8 +53,8 @@ quitting normally; no running game needs to be updated or restarted.
 
 ### Windows
 
-**No Windows game package is available yet.** Windows support is outstanding
-for this same release. The platform-name adapter cross-compiled, but the
+**No Windows game package is available yet.** Windows is a separate
+host-port project with no release date. The platform-name adapter cross-compiled, but the
 complete game failed configuration and still needs Windows host/ABI work,
 libraries and runtime qualification. There is no verified Windows install or
 run procedure yet. See [Windows status and game-data preparation](docs/SETUP.md#windows-status)

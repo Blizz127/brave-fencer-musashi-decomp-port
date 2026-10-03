@@ -10,7 +10,7 @@ are not established.
 | Platform | Package and verification |
 |---|---|
 | Linux x86_64 | Published tarball; forest, village, recorded attract endpoint, isolated inn save and cold Continue checked. Automated gameplay checks used null audio. |
-| Windows | Package pending. A small platform adapter cross-compiled; the complete game did not build, and no Windows gameplay test has passed. See [Windows status](#windows-status). |
+| Windows | Separate host-port project; no release date or package. A small platform adapter cross-compiled; the complete game did not build, and no Windows gameplay test has passed. See [Windows status](#windows-status). |
 
 ## Linux prerequisites
 
@@ -143,7 +143,8 @@ Windows executable. No Windows download filename, installer, runnable `.exe`,
 minimum Windows version or verified Wine/Proton procedure is available to
 recommend at this checkpoint.
 
-Windows remains requested for this same release. Current evidence is limited
+Windows is deferred to a separate host-port project with no release date.
+Current evidence is limited
 to cross-compiling the platform-name adapter and detecting the C/C++
 compiler. Full game configuration stops at missing Windows SDL2 development
 files. The production runtime still needs Windows memory mapping, fault and
@@ -176,7 +177,7 @@ audio or gameplay compatibility claim is made.
 | Dev menu will not open | Use F8 or Back/Select+Start on the same controller; check `BFM_DEV_MENU`, the menu-off marker and `BFM_CHEATS=0`. F1 is help, not the open key. |
 | Save directory unavailable / unreadable card | Check the logged card directory and permissions. Back up the card before investigation; the runtime refuses to replace an unreadable existing card. |
 | Game stops on unsupported code | Record the build, room/actions and refusal address. Attract-mode refusal `800495ec` is known; whole-game coverage remains incomplete. |
-| Windows download missing | Windows qualification is pending; see the status section above. |
+| Windows download missing | A separate Windows host-port project is required; see the status section above. |
 
 For reports, include the release tag and relevant lines from `last-run.log`
 after reviewing it for personal paths or other details you do not want to
