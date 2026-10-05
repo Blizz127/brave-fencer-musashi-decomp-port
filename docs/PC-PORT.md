@@ -504,10 +504,12 @@ What does not run:
   refuse them rather than draw garbage. Viewer expansion is not the current
   menu-boot milestone.
 - **Lighting.** Every polygon takes its authored colour, flat.
-- **Windows.** The roadmap names a Windows port. It is unverified: no MinGW
-  cross-compiler is installed on the development machine, so nothing here
-  has ever been built for it. Do not read "Linux and Windows" elsewhere in the
-  docs as a claim that the Windows path works.
+- **Windows.** A Windows x64 test build exists: `bfm-r44-c427ee546-windows-x64.zip`
+  in release `bfm-r41-3634893fe`. It was cross-built with a zig/LLVM
+  toolchain from unpublished port sources, and its native-lane set is the
+  same as Linux r41. It has been validated under Wine only. Real Windows
+  hardware, and the recipe in this repository, remain unverified for
+  Windows.
 
 The smoke target verifies the link with pure fixed-point maths, so it runs
 headless — requiring a window, display and GPU would make the build check

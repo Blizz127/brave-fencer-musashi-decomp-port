@@ -6,9 +6,12 @@ The current runtime is **hybrid**: compiled host code plus a CPU interpreter.
 The fully native port remains a development goal.
 
 > **Public r38 — 2026-10-02:** Linux x86_64 is available. Forest rendering
-> fixes and isolated inn save/cold Continue checks passed. Windows is still
-> pending: the game has not built or run on Windows. Whole-game completion
-> and full graphics/audio fidelity are unverified.
+> fixes and isolated inn save/cold Continue checks passed.
+> **Windows x64 test build — 2026-10-05:** `bfm-r44-c427ee546-windows-x64.zip`
+> is available in the [bfm-r41-3634893fe](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/releases/tag/bfm-r41-3634893fe) test prerelease. It has been
+> validated under Wine only, not on real Windows. The same prerelease also has
+> a newer Linux r41 test build. Whole-game completion and full graphics/audio
+> fidelity are unverified.
 
 ## About this project
 This is a passion project. I'm working hard on it, but it's made for fun and for everyone's enjoyment — free, non-commercial, and made by a fan. If you enjoy it, that's the whole point.
@@ -51,14 +54,31 @@ For Steam Deck/Game Mode, add `launch.sh` as a non-Steam game and keep Steam
 Input enabled. Preserve earlier version folders and back up saves after
 quitting normally; no running game needs to be updated or restarted.
 
-### Windows
+### Windows x64 (test build, Wine-validated only)
 
-**No Windows game package is available yet.** Windows is a separate
-host-port project with no release date. The platform-name adapter cross-compiled, but the
-complete game failed configuration and still needs Windows host/ABI work,
-libraries and runtime qualification. There is no verified Windows install or
-run procedure yet. See [Windows status and game-data preparation](docs/SETUP.md#windows-status)
-for the exact limits and source-intended paths. Wine/Proton is unverified.
+Download `bfm-r44-c427ee546-windows-x64.zip` and `SHA256SUMS` from the
+[bfm-r41-3634893fe](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/releases/tag/bfm-r41-3634893fe) release page. This build was cross-compiled for
+Windows 10/11 x64 and has run **only under Wine**. It has not been tested on
+real Windows hardware. Its native-lane function set is the same as Linux r41.
+
+1. Optional: check the download in PowerShell with
+   `Get-FileHash bfm-r44-c427ee546-windows-x64.zip -Algorithm SHA256`. Compare
+   the result with the line in `SHA256SUMS`.
+2. Extract the zip to a folder you control, for example
+   `%USERPROFILE%\Games\bfm-port`.
+3. Put the `.cue`/`.bin` dump of **your own USA SLUS-00726 disc** in a `disc\`
+   folder next to `launch.cmd`, or in
+   `%USERPROFILE%\Games\brave-fencer-musashi\disc`. Keep all referenced tracks
+   together. If neither folder has a disc, a file picker asks once. You can
+   also set `BFM_DISC` to the `.cue` path.
+4. Run `launch.cmd`. Saves go to `%APPDATA%\bfm-port` (memory card
+   `bfm_card0.mcd`). The log of the last run is
+   `%APPDATA%\bfm-port\last-run.log`.
+
+The package README says controls and the dev menu work as in the Linux build:
+F8 or Select+Start opens the menu, and `BFM_DEV_MENU=0` turns it off. That
+has not been re-checked on a Windows machine. See
+[Windows notes](docs/SETUP.md#windows-x64-test-build).
 
 ### Controls, saves and dev menu
 
@@ -103,8 +123,9 @@ checks from remaining work.
 snapshot `ec620c78dd5f68a166f6565f7c2d8539e9c378a0`; its runtime binaries
 were built from `61c60516d18bf6402e6dbd937d8c8d18ebd1af4b`. GitHub's automatic
 source archives and the historical build instructions below do not
-reproduce the newer r38 binary. Windows compilation is not yet supported
-by this recipe. Public player instructions above describe the release
+reproduce the newer r38 binary. The Windows x64 binary was cross-built
+from unpublished port sources (windows-port `c427ee546`); this recipe does
+not build it. Public player instructions above describe the release
 artifact, not the older source snapshot's menu behavior.
 
 This repository holds the port (`pc_port/`), its tools (`tools/`), tests,

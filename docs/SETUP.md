@@ -10,7 +10,7 @@ are not established.
 | Platform | Package and verification |
 |---|---|
 | Linux x86_64 | Published tarball; forest, village, recorded attract endpoint, isolated inn save and cold Continue checked. Automated gameplay checks used null audio. |
-| Windows | Separate host-port project; no release date or package. A small platform adapter cross-compiled; the complete game did not build, and no Windows gameplay test has passed. See [Windows status](#windows-status). |
+| Windows x64 | Test build `bfm-r44-c427ee546-windows-x64.zip` in the [bfm-r41-3634893fe](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/releases/tag/bfm-r41-3634893fe) prerelease (2026-10-05). It was cross-compiled and boots through the intro into gameplay under **Wine only**; it has not been tested on real Windows. See [Windows x64 test build](#windows-x64-test-build). |
 
 ## Linux prerequisites
 
@@ -136,34 +136,51 @@ environment variables; disc selection and the menu-off marker work through
 the launcher. The release uses Original rendering; general configuration
 and enhanced rendering options are not promised here.
 
-## Windows status
+## Windows x64 test build
 
-**There is no Windows game package for r38 yet.** The Linux archive is not a
-Windows executable. No Windows download filename, installer, runnable `.exe`,
-minimum Windows version or verified Wine/Proton procedure is available to
-recommend at this checkpoint.
+**Download:** `bfm-r44-c427ee546-windows-x64.zip` (3,980,113 bytes) and
+`SHA256SUMS` from the [bfm-r41-3634893fe](https://github.com/Blizz127/brave-fencer-musashi-decomp-port/releases/tag/bfm-r41-3634893fe) release. The zip's SHA-256
+is `c182fd27d0558389c643c42ccedbbb3d62287d350818873438a1f2ec64f87af5`.
 
-Windows is deferred to a separate host-port project with no release date.
-Current evidence is limited
-to cross-compiling the platform-name adapter and detecting the C/C++
-compiler. Full game configuration stops at missing Windows SDL2 development
-files. The production runtime still needs Windows memory mapping, fault and
-filesystem handling, Windows native-code generation and target libraries
-(SDL2, OpenAL, OpenSSL Crypto and zlib). Installing a compiler alone does not
-produce a working game package.
+**Status:**
+- This is a Windows 10/11 x64 build cross-compiled from unpublished port
+  sources (windows-port `c427ee546`).
+- Its native-lane function set is the same as Linux r41: 585 of 623
+  candidate functions are admitted. Everything else runs on the built-in CPU
+  interpreter, so the runtime is hybrid, as on Linux.
+- It was validated **under Wine only**. It boots, plays the intro and reaches
+  gameplay (rooms 3005 → 3008). It has **not** been run on real Windows
+  hardware, and audio, visual, controller and save behaviour on Windows are
+  unverified.
 
-You can prepare a lawful `.cue`/`.bin` dump of your own USA disc now: keep
-the cue and every referenced track together in a folder you control, retaining
-the filenames referenced by the cue. No Windows automatic discovery or
-installation directory has been verified. The Windows install/run steps,
-prerequisites and package checksum will be added here after a complete build
-qualifies; Linux instructions above remain the available supported route.
+**Install and run:**
+1. Optional: check the zip in PowerShell with
+   `Get-FileHash bfm-r44-c427ee546-windows-x64.zip -Algorithm SHA256`.
+2. Extract it to a folder you control, for example
+   `%USERPROFILE%\Games\bfm-port`.
+3. Put the `.cue`/`.bin` dump of your own USA SLUS-00726 disc in `disc\` next
+   to `launch.cmd`, or in `%USERPROFILE%\Games\brave-fencer-musashi\disc`.
+   Keep the cue and every referenced track together, with their original
+   filenames.
+   - If no disc is found, a file picker asks once and remembers the choice
+     in `%APPDATA%\bfm-port\disc.txt`.
+   - `BFM_DISC` (a `.cue` or `.bin` path) overrides the search.
+   - A 2048-byte `.iso` does not work.
+4. Run `launch.cmd`. No BIOS is needed.
 
-For developers, the source intends `%APPDATA%\bfm-port\bfm_card0.mcd` for
-cards and `%APPDATA%\bfm-port\config.ini` for configuration, with explicit
-save/config overrides. These are **unverified source conventions**, not
-working Windows release instructions. No Windows save migration, controller,
-audio or gameplay compatibility claim is made.
+**Files:**
+- Memory card: `%APPDATA%\bfm-port\bfm_card0.mcd`.
+- Log of the last run: `%APPDATA%\bfm-port\last-run.log`. It writes a
+  PERF line every 10 s.
+- The dev menu is enabled by default. Use F8 or Select+Start, and
+  `BFM_DEV_MENU=0` turns it off. These controls come from the package README
+  and have not been re-checked on real Windows.
+
+**Known issues:**
+- The attract demo stops at a known refusal at `800495ec`.
+- 48 native functions use approximate cycle charges.
+- Interrupts can arrive late at native/interpreted call edges (IRQ-GAP-D011).
+- Whole-game completion is unverified.
 
 ## Troubleshooting
 
@@ -177,7 +194,7 @@ audio or gameplay compatibility claim is made.
 | Dev menu will not open | Use F8 or Back/Select+Start on the same controller; check `BFM_DEV_MENU`, the menu-off marker and `BFM_CHEATS=0`. F1 is help, not the open key. |
 | Save directory unavailable / unreadable card | Check the logged card directory and permissions. Back up the card before investigation; the runtime refuses to replace an unreadable existing card. |
 | Game stops on unsupported code | Record the build, room/actions and refusal address. Attract-mode refusal `800495ec` is known; whole-game coverage remains incomplete. |
-| Windows download missing | A separate Windows host-port project is required; see the status section above. |
+| Windows build will not start | Run `launch.cmd` from the extracted folder, keep `SDL2.dll` and `OpenAL32.dll` beside the `.exe`, and check `%APPDATA%\bfm-port\last-run.log`. The Windows build is Wine-validated only; include your Windows version in reports. |
 
 For reports, include the release tag and relevant lines from `last-run.log`
 after reviewing it for personal paths or other details you do not want to
